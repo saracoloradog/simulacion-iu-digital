@@ -6,9 +6,15 @@ Repositorio de la materia **Simulación** de la IU Digital de Antioquia.
 
 En esta actividad desarrollé un juego de Yahtzee para dos jugadores y un experimento de Montecarlo para comparar las frecuencias de los dados con sus probabilidades teóricas.
 
-- [Informe académico web](index.html)
-- [Juego visual de Yahtzee](demo.html)
-- [Laboratorio interactivo de Montecarlo](laboratorio.html)
+## 🌐 Ver la entrega interactiva
+
+**[👉 ABRIR EL INFORME ACADÉMICO (sitio web, no código)](https://saracoloradog.github.io/simulacion-iu-digital/)**
+
+Desde el informe se puede acceder al juego y al laboratorio de Montecarlo.
+
+- [Informe académico web — ver presentación](https://saracoloradog.github.io/simulacion-iu-digital/)
+- [Jugar Yahtzee — abrir juego](https://saracoloradog.github.io/simulacion-iu-digital/demo.html)
+- [Laboratorio Montecarlo — abrir simulador](https://saracoloradog.github.io/simulacion-iu-digital/laboratorio.html)
 - [Implementación en Python](modulo-1/yahtzee/yahtzee_montecarlo.py)
 - [Pruebas](modulo-1/yahtzee/tests/test_yahtzee.py)
 
