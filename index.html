@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulación · Yahtzee y Montecarlo | IU Digital</title>
+<style>
+:root{--azul:#203a5e;--rojo:#c82332;--amarillo:#f5bf19;--celeste:#08628b;--tinta:#26303d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#e6edf3;color:var(--tinta);font:16px/1.85 Georgia,"Times New Roman",serif}
+.toolbar{position:sticky;top:0;background:#142e4b;color:white;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:9px 20px;font:14px Arial,sans-serif;gap:12px}
+.toolbar a,.toolbar button{color:#fff}.toolbar button{background:var(--amarillo);color:var(--azul);border:0;border-radius:6px;padding:9px 15px;cursor:pointer;font-weight:700}
+.layout{max-width:1230px;display:grid;grid-template-columns:215px 1fr;gap:22px;margin:24px auto;align-items:start;padding:0 14px}
+aside{position:sticky;top:74px;background:#fff;padding:20px 14px;border-radius:10px;font:13px/1.7 Arial,sans-serif;box-shadow:0 4px 18px #1d385314}
+aside strong{color:var(--azul);letter-spacing:.07em}aside a{display:block;padding:8px 7px;color:#38566f;text-decoration:none;border-bottom:1px solid #edf1f5}aside a:hover{color:var(--rojo)}
+.pages{min-width:0}.page{position:relative;width:210mm;min-height:297mm;margin:0 auto 18px;background:#fff;padding:24mm 23mm 27mm;box-shadow:0 4px 19px #172f481f;page-break-after:always}
+.page:before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--celeste) 0 73%,var(--rojo) 73% 88%,var(--amarillo) 88%)}
+.footer{position:absolute;bottom:0;left:0;right:0;background:var(--azul);color:white;padding:7px 23mm;display:flex;justify-content:space-between;gap:10px;font:10px Arial,sans-serif}
+.kicker{font:11px Arial,sans-serif;color:#60758a;text-transform:uppercase;letter-spacing:.09em;margin-bottom:20px;border-bottom:1px solid #dce6ed;padding-bottom:10px}
+h1{font-size:26px;line-height:1.45;color:var(--azul);text-align:center;margin:35px 0}
+h2{font:bold 19px/1.5 Arial,sans-serif;letter-spacing:.03em;color:var(--azul);margin:10px 0 24px}
+h3{font:bold 14px Arial,sans-serif;color:var(--celeste);margin-top:26px;text-transform:uppercase}
+p{margin:0 0 18px;text-align:justify}ul,ol{margin:10px 0 22px;padding-left:25px}li{margin-bottom:9px}
+.center{text-align:center}.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:235mm}
+.cover .brand{font:bold 27px Arial,sans-serif;color:var(--azul);margin:10px 0}.cover .divider{height:6px;width:115px;background:linear-gradient(90deg,var(--celeste) 0 65%,var(--rojo) 65% 85%,var(--amarillo) 85%);margin:22px auto}
+.cover h1{margin:32px 0 26px}.cover p{text-align:center}.cover .gap{height:55px}
+table{border-collapse:collapse;width:100%;margin:20px 0 7px;font:12px/1.6 Arial,sans-serif}
+th{background:var(--azul);color:#fff;font-weight:700;text-align:left;padding:10px}
+td{border-bottom:1px solid #d9e3ec;padding:9px 10px}tr:nth-child(even) td{background:#f3f7fa}
+caption{caption-side:top;text-align:left;color:var(--azul);font-weight:bold;padding:0 0 9px}
+.figure{background:#f5f8fb;border-left:4px solid var(--celeste);border-radius:5px;padding:18px 20px;margin:23px 0}
+.formula{font:18px/1.5 Georgia,serif;text-align:center;background:#f3f6fa;border:1px solid #dce5ee;border-radius:8px;padding:14px;margin:18px 0}
+.note{font:12px/1.65 Arial,sans-serif;color:#5a6877}
+.metricas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:25px 0}
+.metrica{background:#edf3f8;border-top:3px solid var(--celeste);padding:14px;border-radius:4px;font:11px Arial}.metrica strong{display:block;color:var(--azul);font-size:24px;margin-bottom:7px}
+.barras{display:grid;gap:11px;margin:20px 0}.barra{display:grid;grid-template-columns:53px 1fr 70px;align-items:center;gap:8px;font:12px Arial}
+.track{background:#e3ebf2;border-radius:20px;overflow:hidden;height:15px}.fill{height:100%;background:var(--celeste);border-radius:20px}
+.callout{border-left:4px solid var(--amarillo);background:#fff9e9;padding:13px 18px;margin:20px 0;font:14px/1.6 Arial,sans-serif}
+.link{color:var(--celeste);font-weight:bold;overflow-wrap:anywhere}.references{padding-left:25px;text-indent:-25px;line-height:2}
+@media(max-width:1100px){.page{width:min(100%,210mm);min-height:0;padding:25px 20px 62px}.layout{grid-template-columns:1fr;max-width:850px}aside{position:static;display:flex;flex-wrap:wrap;gap:5px}aside strong{width:100%}aside a{padding:5px}h1{font-size:23px}.cover{min-height:650px}.footer{padding:8px 20px}}
+@media print{@page{size:A4;margin:0}body{background:#fff}.toolbar,aside{display:none!important}.layout{display:block;margin:0;padding:0}.page{width:210mm;height:297mm;min-height:297mm;max-height:297mm;overflow:hidden;margin:0;box-shadow:none;break-after:page;page-break-after:always;padding:24mm 23mm 27mm}.pages{display:block}.footer{padding:7px 23mm}.cover{min-height:235mm}a{color:var(--celeste)!important}}
+</style></head><body>
+<div class="toolbar"><span>IU DIGITAL · SIMULACIÓN · MÓDULO 1</span><span><a href="demo.html">Probar juego 🎲</a> &nbsp; <button onclick="window.print()">Guardar como PDF</button></span></div>
+<div class="layout"><aside><strong>CONTENIDO</strong>
+<a href="#portada">PORTADA</a><a href="#introduccion">INTRODUCCIÓN</a><a href="#objetivos">OBJETIVOS Y PROBLEMA</a><a href="#metodologia">METODOLOGÍA</a><a href="#implementacion">IMPLEMENTACIÓN</a><a href="#resultados">RESULTADOS</a><a href="#analisis">ANÁLISIS</a><a href="#conclusiones">CONCLUSIONES</a><a href="#referencias">REFERENCIAS Y ANEXOS</a>
+</aside><main class="pages">
+<section class="page" id="portada"><div class="cover">
+<div class="brand">IU DIGITAL</div><div>INSTITUCIÓN UNIVERSITARIA DIGITAL DE ANTIOQUIA</div><div class="divider"></div>
+<h1>SIMULACIÓN DEL JUEGO YAHTZEE<br>APLICACIÓN DEL MÉTODO DE MONTECARLO</h1>
+<p>Actividad Didáctica 2 · Módulo 1</p><div class="gap"></div>
+<p><strong>Sara Colorado Gil</strong></p>
+<p>Facultad de Ingeniería<br>Asignatura: Simulación<br>Docente: Julián Andrés Loaiza López</p>
+<div class="gap"></div><p>Medellín, Antioquia<br>Octubre de 2026</p>
+</div><div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>1</span></div></section>
+<section class="page" id="introduccion"><div class="kicker">Actividad didáctica 2 · Módulo 1</div>
+<h2>INTRODUCCIÓN</h2>
+<p>En esta actividad trabajé con el juego de Yahtzee para entender mejor cómo funciona una simulación cuando hay resultados que no podemos predecir con exactitud. El juego utiliza cinco dados, y cada lanzamiento puede terminar en una combinación distinta. Justamente por eso me pareció una buena forma de comenzar a practicar conceptos de probabilidad.</p>
+<p>Primero organicé las reglas del juego y las categorías de puntuación para construir una versión en Python de dos jugadores. La idea fue que cada jugador pudiera lanzar los dados hasta tres veces por turno, decidir cuáles conservar y registrar su puntuación sin repetir categorías.</p>
+<p>Después preparé un experimento con el método de Montecarlo. En lugar de jugar una sola partida, el programa repite 100.000 veces el lanzamiento de cinco dados para observar qué tan seguido aparece cada cara y cuántas veces se consigue una combinación de cinco números iguales.</p>
+<p>También preparé una demostración visual en el navegador. Así puedo mostrar cómo funcionan los turnos y las decisiones de los jugadores, mientras el código en Python permite revisar el algoritmo y reproducir el experimento estadístico.</p>
+<p>Más que buscar un resultado específico, el ejercicio consiste en comparar lo que esperamos según la probabilidad con lo que realmente ocurre en una simulación y explicar por qué los resultados no son idénticos en todos los intentos.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>2</span></div></section>
+<section class="page" id="objetivos"><div class="kicker">Planteamiento del ejercicio</div>
+<h2>OBJETIVOS Y DESCRIPCIÓN DEL PROBLEMA</h2>
+<h3>Objetivo general</h3>
+<p>Desarrollar una simulación del juego Yahtzee para dos jugadores y utilizar el método de Montecarlo para analizar los resultados de lanzamientos aleatorios de cinco dados.</p>
+<h3>Objetivos específicos</h3><ul>
+<li>Representar cinco dados de seis caras con la misma probabilidad de obtener cada número.</li>
+<li>Implementar turnos con hasta tres lanzamientos y la opción de conservar dados.</li>
+<li>Calcular y guardar la puntuación de las 13 categorías del juego.</li>
+<li>Repetir lanzamientos mediante Montecarlo para comparar resultados experimentales con probabilidades teóricas.</li>
+<li>Presentar el procedimiento y los resultados de una forma que se pueda revisar y probar.</li></ul>
+<h3>¿Qué se está simulando?</h3>
+<p>Cada dado puede tomar uno de seis valores: 1, 2, 3, 4, 5 o 6. Como trabajamos con dados equilibrados, todos tienen la misma probabilidad de salir. Los lanzamientos son independientes: el valor de un dado no depende del resultado anterior.</p>
+<div class="formula">P(X = x) = 1/6 &nbsp; para x ∈ {1, 2, 3, 4, 5, 6}</div>
+<div class="figure"><strong>Dos partes del proyecto</strong><p style="margin-top:12px">🎲 <strong>Juego:</strong> dos participantes toman decisiones, conservan dados y anotan puntos.</p><p>📊 <strong>Experimento:</strong> el programa repite lanzamientos independientes y registra frecuencias.</p><p class="note">No son exactamente el mismo procedimiento: en una partida intervienen las decisiones; en el experimento se estudia el azar sin estrategia.</p></div>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>3</span></div></section>
+<section class="page" id="metodologia"><div class="kicker">Diseño de la solución</div>
+<h2>METODOLOGÍA</h2>
+<h3>1. Definir las reglas</h3>
+<p>El juego se organiza en 13 rondas por jugador. En cada ronda se lanzan cinco dados y se permiten hasta tres lanzamientos. El jugador puede conservar algunos resultados para tratar de mejorar su combinación. Al final debe seleccionar una categoría que todavía no haya utilizado.</p>
+<h3>2. Representar los dados y la puntuación</h3>
+<p>En Python utilicé una lista para guardar los cinco valores y un diccionario para registrar las categorías de cada participante. Así es posible consultar qué categorías están disponibles y calcular el resultado acumulado.</p>
+<h3>3. Implementar el lanzamiento</h3>
+<p>Para los dados utilicé un generador pseudoaleatorio de Python. Cada cara se obtiene con la misma posibilidad. Cuando un dado está marcado para conservarse, no se modifica en el siguiente lanzamiento.</p>
+<h3>4. Ejecutar Montecarlo</h3>
+<p>Después de implementar el juego, repetí 100.000 lanzamientos independientes de cinco dados. En cada iteración registré los números obtenidos y revisé si los cinco dados eran iguales. Utilicé la semilla 2026 para poder repetir el experimento y comparar los mismos resultados.</p>
+<div class="figure"><strong>Secuencia de la simulación</strong><p style="text-align:center;margin:15px 0 0">INICIO → GENERAR 5 DADOS → REGISTRAR RESULTADOS → ¿SON IGUALES? → REPETIR N VECES → ANALIZAR</p></div>
+<h3>5. Validar los resultados</h3>
+<p>Comprobé casos conocidos de puntuación, como full, escaleras y Yahtzee, además de verificar que los dados se generen entre 1 y 6. El repositorio incluye las pruebas para poder repetir estas comprobaciones.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>4</span></div></section>
+<section class="page" id="implementacion"><div class="kicker">Código y juego</div>
+<h2>IMPLEMENTACIÓN DE LA SOLUCIÓN</h2>
+<p>La implementación principal está desarrollada en Python y se puede ejecutar desde la terminal. Incluye dos modos: uno para jugar una partida y otro para repetir lanzamientos con Montecarlo.</p>
+<table><caption>Componentes principales</caption><thead><tr><th>Función</th><th>Qué hace</th></tr></thead><tbody>
+<tr><td>lanzar_dados()</td><td>Genera cinco valores del 1 al 6 y permite conservar posiciones.</td></tr>
+<tr><td>puntuar()</td><td>Calcula los puntos según la categoría elegida.</td></tr>
+<tr><td>jugar()</td><td>Controla las rondas y los turnos de los dos jugadores.</td></tr>
+<tr><td>montecarlo()</td><td>Repite los lanzamientos y cuenta sus frecuencias.</td></tr></tbody></table>
+<h3>Cómo ejecutar el proyecto</h3>
+<div class="figure"><code>python modulo-1/yahtzee/yahtzee_montecarlo.py --jugar</code><p class="note">Inicia la partida de dos jugadores desde la terminal.</p><code>python modulo-1/yahtzee/yahtzee_montecarlo.py --simulaciones 100000 --semilla 2026</code><p class="note">Ejecuta el experimento con una semilla fija.</p></div>
+<h3>Demostración visual</h3>
+<p>Para poder mostrar el funcionamiento del juego sin instalar Python, preparé una versión web con cinco dados que se pueden seleccionar, tres lanzamientos y una tarjeta de puntos para cada jugador.</p>
+<p class="center"><a class="link" href="demo.html">ABRIR EL JUEGO INTERACTIVO DE YAHTZEE ↗</a></p>
+<p class="note">La demostración web está hecha con JavaScript. El experimento estadístico que se analiza a continuación se ejecutó en Python.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>5</span></div></section>
+<section class="page" id="resultados"><div class="kicker">Experimento Montecarlo · Semilla 2026</div>
+<h2>RESULTADOS DE LA SIMULACIÓN</h2>
+<div class="metricas"><div class="metrica"><strong>100.000</strong>Lanzamientos de cinco dados</div><div class="metrica"><strong>500.000</strong>Resultados individuales</div><div class="metrica"><strong>79</strong>Yahtzees observados</div></div>
+<p>En el experimento, cada una de las seis caras apareció cerca del 16,67 %, que es el valor esperado para un dado uniforme. No aparecieron exactamente el mismo número de veces, y eso es normal cuando trabajamos con muestras aleatorias.</p>
+<table><caption>Tabla 1. Frecuencias observadas</caption><thead><tr><th>Cara</th><th>Apariciones</th><th>Porcentaje observado</th><th>Esperado</th></tr></thead><tbody>
+<tr><td>1</td><td>83.701</td><td>16,7402 %</td><td>16,6667 %</td></tr>
+<tr><td>2</td><td>83.142</td><td>16,6284 %</td><td>16,6667 %</td></tr>
+<tr><td>3</td><td>83.483</td><td>16,6966 %</td><td>16,6667 %</td></tr>
+<tr><td>4</td><td>83.346</td><td>16,6692 %</td><td>16,6667 %</td></tr>
+<tr><td>5</td><td>83.059</td><td>16,6118 %</td><td>16,6667 %</td></tr>
+<tr><td>6</td><td>83.269</td><td>16,6538 %</td><td>16,6667 %</td></tr>
+</tbody></table>
+<h3>Visualización de las frecuencias</h3>
+<div class="barras">
+<div class="barra"><strong>Cara 1</strong><div class="track"><div class="fill" style="width:93.00%"></div></div><span>16,7402 %</span></div><div class="barra"><strong>Cara 2</strong><div class="track"><div class="fill" style="width:92.38%"></div></div><span>16,6284 %</span></div><div class="barra"><strong>Cara 3</strong><div class="track"><div class="fill" style="width:92.76%"></div></div><span>16,6966 %</span></div><div class="barra"><strong>Cara 4</strong><div class="track"><div class="fill" style="width:92.61%"></div></div><span>16,6692 %</span></div><div class="barra"><strong>Cara 5</strong><div class="track"><div class="fill" style="width:92.29%"></div></div><span>16,6118 %</span></div><div class="barra"><strong>Cara 6</strong><div class="track"><div class="fill" style="width:92.52%"></div></div><span>16,6538 %</span></div>
+</div><p class="note">Gráfico 1. Proporción observada de cada cara entre los 500.000 resultados generados.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>6</span></div></section>
+<section class="page" id="analisis"><div class="kicker">Comparación con la teoría</div>
+<h2>ANÁLISIS DE LOS RESULTADOS</h2>
+<h3>Probabilidad de obtener Yahtzee</h3>
+<p>Para obtener un Yahtzee en un solo lanzamiento, los cinco dados deben mostrar el mismo número. No importa si son unos, doses o seises: cualquiera de las seis combinaciones sirve.</p>
+<div class="formula">P(Yahtzee) = 6 × (1/6)⁵ = 1/1296 ≈ 0,07716 %</div>
+<p>En 100.000 lanzamientos, el valor esperado es de aproximadamente 77 casos. El programa registró 79, una cantidad muy cercana, aunque no exactamente igual.</p>
+<table><caption>Tabla 2. Comparación del evento Yahtzee</caption><thead><tr><th>Indicador</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>Probabilidad teórica</td><td>0,07716 %</td></tr><tr><td>Yahtzees esperados</td><td>77,16</td></tr><tr><td>Yahtzees encontrados</td><td>79</td></tr><tr><td>Frecuencia observada</td><td>0,07900 %</td></tr></tbody></table>
+<h3>¿Por qué no coinciden exactamente?</h3>
+<p>Porque cada lanzamiento tiene un resultado aleatorio. Cuando repetimos el experimento muchas veces, las proporciones suelen acercarse a los valores teóricos, pero eso no significa que todas las frecuencias tengan que coincidir de manera perfecta. Esa fue una de las ideas más importantes que pude comprobar con este ejercicio.</p>
+<div class="callout"><strong>Importante:</strong> este cálculo corresponde a obtener cinco dados iguales en <em>un lanzamiento</em>. Una partida real permite conservar dados y volver a lanzar, así que la probabilidad de lograr un Yahtzee durante un turno depende también de las decisiones del jugador.</div>
+<p>Los datos completos se pueden consultar en el <a class="link" href="modulo-1/yahtzee/resultados/montecarlo.csv">archivo CSV de resultados</a>.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>7</span></div></section>
+<section class="page" id="conclusiones"><div class="kicker">Aprendizajes del ejercicio</div>
+<h2>CONCLUSIONES</h2>
+<p>Con esta actividad entendí que simular no es solamente generar números al azar. Primero hay que pensar cómo funciona el sistema que queremos representar, definir sus reglas y comprobar que el programa las esté cumpliendo.</p>
+<p>El juego de Yahtzee me permitió trabajar con decisiones de los jugadores, categorías de puntuación y lanzamientos que no siempre terminan como esperamos. Además, al repetir el experimento de Montecarlo pude ver la diferencia entre conocer una probabilidad en teoría y observarla en la práctica.</p>
+<p>Me llamó la atención que, incluso con 100.000 intentos, no se obtienen proporciones perfectas. Aun así, los resultados se acercaron bastante a los valores esperados. En particular, los 79 Yahtzees observados son muy próximos a los 77 que se esperarían aproximadamente.</p>
+<p>También fue útil separar el juego interactivo del experimento estadístico: el primero sirve para comprender las reglas y probar distintas decisiones; el segundo permite analizar el comportamiento de los dados cuando se repite una misma situación muchas veces.</p>
+<p>Me queda más claro para qué sirve el método de Montecarlo y por qué es importante verificar el código y explicar las condiciones del experimento antes de sacar conclusiones.</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>8</span></div></section>
+<section class="page" id="referencias"><div class="kicker">Fuentes y acceso al proyecto</div>
+<h2>REFERENCIAS Y ANEXOS</h2>
+<h3>Referencias</h3>
+<div class="references">Python Software Foundation. (s. f.). <em>random — Generate pseudo-random numbers</em>. Python Documentation. https://docs.python.org/3/library/random.html</div>
+<div class="references">Solitaired. (s. f.). <em>Yahtzee</em>. https://solitaired.com/yahtzee</div>
+<h3>Anexos</h3><ol>
+<li><a class="link" href="demo.html">Demostración interactiva del juego</a>: permite lanzar, conservar dados y puntuar.</li>
+<li><a class="link" href="modulo-1/yahtzee/yahtzee_montecarlo.py">Código Python</a>: implementación del juego y del experimento Montecarlo.</li>
+<li><a class="link" href="modulo-1/yahtzee/tests/test_yahtzee.py">Pruebas automáticas</a>: validación de reglas y resultados básicos.</li>
+<li><a class="link" href="modulo-1/yahtzee/resultados/montecarlo.csv">Archivo de resultados</a>: 100.000 lanzamientos con semilla 2026.</li></ol>
+<div class="callout">El video de sustentación se incorporará aquí cuando esté grabado. En él se mostrará el funcionamiento del juego y se explicarán las decisiones del algoritmo y los resultados de Montecarlo.</div>
+<h3>Repositorio académico</h3><p><a class="link" href="https://github.com/saracoloradog/simulacion-iu-digital">github.com/saracoloradog/simulacion-iu-digital</a></p>
+<p class="note">Este informe se puede consultar desde el navegador e imprimir como PDF utilizando el botón superior «Guardar como PDF».</p>
+<div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>9</span></div></section>
+</main></div></body></html>
