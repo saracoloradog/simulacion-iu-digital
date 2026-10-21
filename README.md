@@ -8,6 +8,7 @@ En esta actividad desarrollé un juego de Yahtzee para dos jugadores y un experi
 
 - [Informe académico web](index.html)
 - [Juego visual de Yahtzee](demo.html)
+- [Laboratorio interactivo de Montecarlo](laboratorio.html)
 - [Implementación en Python](modulo-1/yahtzee/yahtzee_montecarlo.py)
 - [Pruebas](modulo-1/yahtzee/tests/test_yahtzee.py)
 
@@ -24,3 +25,5 @@ python -m unittest discover -s modulo-1/yahtzee/tests
 El experimento de Montecarlo repite **lanzamientos independientes de cinco dados**. No equivale a calcular la probabilidad de ganar después de los tres intentos de una partida, donde también influye la estrategia.
 
 **Autora:** Sara Colorado Gil.
+
+La página del laboratorio permite ejecutar entre 100 y 100.000 lanzamientos, observar las frecuencias y exportar un CSV. Está construida en JavaScript y funciona sin servidor.
