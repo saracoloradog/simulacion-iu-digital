@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yahtzee | Demostración interactiva</title>
+<style>
+:root{--azul:#203a5e;--celeste:#08628b;--rojo:#c82332;--amarillo:#f5bf19;--fondo:#f0f4f8}
+*{box-sizing:border-box}body{margin:0;background:var(--fondo);color:#263242;font:16px system-ui,Arial}
+header{background:var(--azul);color:white;padding:20px max(20px,calc((100vw - 1050px)/2));border-bottom:5px solid var(--amarillo)}
+header a{color:#fff}main{max-width:1050px;margin:28px auto;padding:0 18px}
+h1{margin:8px 0;font-size:30px}h2{color:var(--azul)}
+.sub{color:#d8e7f2}.layout{display:grid;grid-template-columns:1fr 350px;gap:20px}
+.panel{background:#fff;border-radius:12px;padding:22px;box-shadow:0 3px 20px #16274010}
+.dados{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:22px 0}
+.dado{width:76px;height:83px;border:2px solid #bdcddc;border-radius:13px;background:white;font-size:37px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.dado.guardado{background:#fff4d1;border-color:var(--amarillo)}
+.dado small{font-size:11px;color:#526575;margin-top:5px}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px 15px;font-weight:700;font-size:14px}
+.primary{background:var(--celeste);color:white}.secondary{background:#e3edf6;color:var(--azul)}
+button:disabled{opacity:.45;cursor:not-allowed}select{padding:11px;border:1px solid #c3d1df;border-radius:8px;max-width:100%;width:100%}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 6px;border-bottom:1px solid #e2e7ed;text-align:left}
+td:not(:first-child),th:not(:first-child){text-align:right}
+th{color:var(--azul);font-size:12px}tr.current{background:#fff6e3}
+.notice{padding:12px;background:#eaf0f7;border-left:4px solid var(--celeste);line-height:1.5;border-radius:3px;margin:16px 0}
+.note{font-size:13px;color:#68778a}
+#estado{font-weight:650;color:var(--azul)}
+footer{margin:32px 0;color:#748397;font-size:13px;text-align:center}
+@media(max-width:780px){.layout{grid-template-columns:1fr}.dado{width:57px;height:69px;font-size:30px}header{padding:20px}}
+</style>
+</head>
+<body>
+<header><a href="index.html">← Volver al informe</a><h1>Yahtzee · Dos jugadores</h1><div class="sub">Simulación interactiva · IU Digital · Módulo 1</div></header>
+<main>
+<div class="layout">
+<section class="panel">
+<h2>Juguemos una partida</h2>
+<p id="estado">Turno del Jugador 1</p>
+<p>Haz tu primer lanzamiento. Después puedes seleccionar los dados que quieres conservar antes de volver a lanzar.</p>
+<div class="dados" id="dados" aria-label="Dados"></div>
+<div><strong id="intentos">Lanzamientos disponibles: 3</strong></div>
+<div class="actions"><button id="lanzar" class="primary">Lanzar dados</button><button id="reiniciar" class="secondary">Nueva partida</button></div>
+<div class="notice">Cada jugador dispone de hasta tres lanzamientos por turno y tiene que anotar una categoría. Si no consigue la combinación, puede registrar 0 puntos.</div>
+<h2>Registrar puntuación</h2>
+<label for="categoria">Categoría disponible</label>
+<select id="categoria"></select>
+<p id="puntaje">Lanza los dados para consultar los puntos de cada categoría.</p>
+<button id="anotar" class="primary" disabled>Anotar puntos y pasar turno</button>
+<p class="note">Los dados dorados quedan conservados; haz clic sobre ellos otra vez para soltarlos.</p>
+</section>
+<section class="panel"><h2>Marcador</h2><table><thead><tr><th>Categoría</th><th>Jugador 1</th><th>Jugador 2</th></tr></thead><tbody id="tabla"></tbody></table><p class="note">Bono de 35 puntos al sumar 63 o más en las primeras seis categorías.</p><p id="ganador"></p></section>
+</div>
+<footer>Sara Colorado Gil · Institución Universitaria Digital de Antioquia · 2026</footer>
+</main>
+<script>
+const nombres=["Unos","Doses","Treses","Cuatros","Cincos","Seises","Tercia","Póker","Full","Escalera menor","Escalera mayor","Yahtzee","Chance"];
+const claves=["unos","doses","treses","cuatros","cincos","seises","tercia","poker","full","escalera_menor","escalera_mayor","yahtzee","chance"];
+let dados=[0,0,0,0,0],guardados=[false,false,false,false,false],tiros=0,jugador=0,cartones=[{},{}],terminado=false;
+const $=x=>document.getElementById(x);
+function puntos(c){
+const hist={};dados.forEach(x=>hist[x]=(hist[x]||0)+1);
+const valores=Object.values(hist),unicos=new Set(dados),suma=dados.reduce((a,b)=>a+b,0);
+if(c<6)return dados.filter(x=>x===c+1).reduce((a,b)=>a+b,0);
+if(c===6)return Math.max(...valores)>=3?suma:0;
+if(c===7)return Math.max(...valores)>=4?suma:0;
+if(c===8)return valores.sort().join(",")==="2,3"?25:0;
+if(c===9)return [1,2,3].some(i=>[i,i+1,i+2,i+3].every(x=>unicos.has(x)))?30:0;
+if(c===10)return [[1,2,3,4,5],[2,3,4,5,6]].some(g=>g.every(x=>unicos.has(x)))?40:0;
+if(c===11)return unicos.size===1?50:0;
+return suma;
+}
+function total(n){const c=cartones[n];let s=Object.values(c).reduce((a,b)=>a+b,0),arriba=claves.slice(0,6).reduce((a,k)=>a+(c[k]||0),0);return s+(arriba>=63?35:0)}
+function mostrar(){
+$("dados").innerHTML=dados.map((d,i)=>'<button class="dado '+(guardados[i]?'guardado':'')+'" data-i="'+i+'" '+(!tiros||tiros===3?'disabled':'')+'>'+(d?["","⚀","⚁","⚂","⚃","⚄","⚅"][d]:"?")+'<small>'+(guardados[i]?'Conservado':'Dado '+(i+1))+'</small></button>').join("");
+document.querySelectorAll(".dado").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;guardados[i]=!guardados[i];mostrar()});
+$("intentos").textContent="Lanzamientos disponibles: "+(3-tiros);
+$("lanzar").disabled=terminado||tiros>=3;
+$("anotar").disabled=terminado||tiros===0;
+$("estado").textContent=terminado?"Partida finalizada":"Turno del Jugador "+(jugador+1)+" · Ronda "+(Object.keys(cartones[jugador]).length+1)+"/13";
+$("categoria").innerHTML=claves.map((k,i)=>({k,i})).filter(x=>cartones[jugador][x.k]===undefined).map(x=>'<option value="'+x.i+'">'+nombres[x.i]+'</option>').join("");
+$("tabla").innerHTML=claves.map((k,i)=>'<tr><td>'+nombres[i]+'</td><td>'+(cartones[0][k]??"—")+'</td><td>'+(cartones[1][k]??"—")+'</td></tr>').join("")+'<tr><th>Total</th><th>'+total(0)+'</th><th>'+total(1)+'</th></tr>';
+mostrarPuntaje();
+}
+function mostrarPuntaje(){const c=+$("categoria").value;$("puntaje").textContent=tiros>0&&Number.isInteger(c)?"Puntuación en "+nombres[c]+": "+puntos(c)+" puntos":"Lanza los dados para empezar."}
+$("categoria").addEventListener("change",mostrarPuntaje);
+$("lanzar").onclick=()=>{if(tiros>=3)return;dados=dados.map((d,i)=>guardados[i]?d:Math.floor(Math.random()*6)+1);tiros++;mostrar()};
+$("anotar").onclick=()=>{if(!tiros||terminado)return;const c=+$("categoria").value;cartones[jugador][claves[c]]=puntos(c);if(Object.keys(cartones[0]).length===13&&Object.keys(cartones[1]).length===13){terminado=true;const a=total(0),b=total(1);$("ganador").textContent=a===b?"¡Empate!":("Ganó Jugador "+(a>b?1:2)+" con "+Math.max(a,b)+" puntos");}else jugador=1-jugador;dados=[0,0,0,0,0];guardados=[false,false,false,false,false];tiros=0;mostrar()};
+$("reiniciar").onclick=()=>{if(!confirm("¿Empezar una nueva partida?"))return;dados=[0,0,0,0,0];guardados=[false,false,false,false,false];tiros=0;jugador=0;cartones=[{},{}];terminado=false;$("ganador").textContent="";mostrar()};
+mostrar();
+</script>
+</body></html>
