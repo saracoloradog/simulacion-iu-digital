@@ -36,7 +36,7 @@ caption{caption-side:top;text-align:left;color:var(--azul);font-weight:bold;padd
 @media(max-width:1100px){.page{width:min(100%,210mm);min-height:0;padding:25px 20px 62px}.layout{grid-template-columns:1fr;max-width:850px}aside{position:static;display:flex;flex-wrap:wrap;gap:5px}aside strong{width:100%}aside a{padding:5px}h1{font-size:23px}.cover{min-height:650px}.footer{padding:8px 20px}}
 @media print{@page{size:A4;margin:0}body{background:#fff}.toolbar,aside{display:none!important}.layout{display:block;margin:0;padding:0}.page{width:210mm;height:297mm;min-height:297mm;max-height:297mm;overflow:hidden;margin:0;box-shadow:none;break-after:page;page-break-after:always;padding:24mm 23mm 27mm}.pages{display:block}.footer{padding:7px 23mm}.cover{min-height:235mm}a{color:var(--celeste)!important}}
 </style></head><body>
-<div class="toolbar"><span>IU DIGITAL · SIMULACIÓN · MÓDULO 1</span><span><a href="demo.html">Probar juego 🎲</a> &nbsp; <button onclick="window.print()">Guardar como PDF</button></span></div>
+<div class="toolbar"><span>IU DIGITAL · SIMULACIÓN · MÓDULO 1</span><span><a href="laboratorio.html">Laboratorio Montecarlo 📊</a> &nbsp; · &nbsp; <a href="demo.html">Probar juego 🎲</a> &nbsp; <button onclick="window.print()">Guardar como PDF</button></span></div>
 <div class="layout"><aside><strong>CONTENIDO</strong>
 <a href="#portada">PORTADA</a><a href="#introduccion">INTRODUCCIÓN</a><a href="#objetivos">OBJETIVOS Y PROBLEMA</a><a href="#metodologia">METODOLOGÍA</a><a href="#implementacion">IMPLEMENTACIÓN</a><a href="#resultados">RESULTADOS</a><a href="#analisis">ANÁLISIS</a><a href="#conclusiones">CONCLUSIONES</a><a href="#referencias">REFERENCIAS Y ANEXOS</a>
 </aside><main class="pages">
@@ -98,6 +98,7 @@ caption{caption-side:top;text-align:left;color:var(--azul);font-weight:bold;padd
 <h3>Demostración visual</h3>
 <p>Para poder mostrar el funcionamiento del juego sin instalar Python, preparé una versión web con cinco dados que se pueden seleccionar, tres lanzamientos y una tarjeta de puntos para cada jugador.</p>
 <p class="center"><a class="link" href="demo.html">ABRIR EL JUEGO INTERACTIVO DE YAHTZEE ↗</a></p>
+<p class="center"><a class="link" href="laboratorio.html">EJECUTAR EL LABORATORIO DE MONTECARLO ↗</a></p>
 <p class="note">La demostración web está hecha con JavaScript. El experimento estadístico que se analiza a continuación se ejecutó en Python.</p>
 <div class="footer"><span>SIMULACIÓN | ACTIVIDAD 2-M1</span><span>5</span></div></section>
 <section class="page" id="resultados"><div class="kicker">Experimento Montecarlo · Semilla 2026</div>
@@ -144,6 +145,7 @@ caption{caption-side:top;text-align:left;color:var(--azul);font-weight:bold;padd
 <div class="references">Python Software Foundation. (s. f.). <em>random — Generate pseudo-random numbers</em>. Python Documentation. https://docs.python.org/3/library/random.html</div>
 <div class="references">Solitaired. (s. f.). <em>Yahtzee</em>. https://solitaired.com/yahtzee</div>
 <h3>Anexos</h3><ol>
+<li><a class="link" href="laboratorio.html">Laboratorio interactivo de Montecarlo</a>: permite elegir la cantidad de intentos, ver las frecuencias y la convergencia y descargar resultados.</li>
 <li><a class="link" href="demo.html">Demostración interactiva del juego</a>: permite lanzar, conservar dados y puntuar.</li>
 <li><a class="link" href="modulo-1/yahtzee/yahtzee_montecarlo.py">Código Python</a>: implementación del juego y del experimento Montecarlo.</li>
 <li><a class="link" href="modulo-1/yahtzee/tests/test_yahtzee.py">Pruebas automáticas</a>: validación de reglas y resultados básicos.</li>
