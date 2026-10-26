@@ -6,6 +6,12 @@ Repositorio de la materia **Simulación** de la IU Digital de Antioquia.
 
 En esta actividad desarrollé un juego de Yahtzee para dos jugadores y un experimento de Montecarlo para comparar las frecuencias de los dados con sus probabilidades teóricas.
 
+## 🎥 Video de sustentación
+
+**[▶️ VER VIDEO DE SUSTENTACIÓN EN GOOGLE DRIVE](https://drive.google.com/file/d/1gqFkcGyxMB93lJUQeaNJ2_ODZk-kNphH/view?usp=sharing)**
+
+En el video se presenta el funcionamiento del juego de Yahtzee y se explican la simulación de Montecarlo, el algoritmo y los resultados obtenidos.
+
 ## 🌐 Ver la entrega interactiva
 
 **[👉 ABRIR EL INFORME ACADÉMICO (sitio web, no código)](https://saracoloradog.github.io/simulacion-iu-digital/)**
