@@ -1,0 +1,14 @@
+/* Matemática sin dependencias; el mismo orden de muestreo y LCG32 que Python. */
+(function(root){
+'use strict';
+const sum=a=>a.reduce((x,y)=>x+y,0),argmax=a=>a.indexOf(Math.max(...a));
+function validate(m){const n=m.pi.length;if(!n||m.A.length!==n||m.A.some(r=>r.length!==n)||m.B.length!==n||!m.B[0].length||m.B.some(r=>r.length!==m.B[0].length))throw Error('Dimensiones incompatibles');for(const r of [...m.A,...m.B,m.pi])if(r.some(x=>!Number.isFinite(x)||x<0||x>1)||Math.abs(sum(r)-1)>1e-10)throw Error('Cada fila debe sumar 1 y contener probabilidades entre 0 y 1.');}
+function rng(seed){let x=seed>>>0;return ()=>{x=(Math.imul(1664525,x)+1013904223)>>>0;return x/4294967296;};}
+function simulate(m,T,seed){validate(m);const rand=rng(seed),s=[],o=[];const cat=p=>{let u=rand(),c=0;for(let j=0;j<p.length;j++){c+=p[j];if(u<c)return j;}return p.length-1;};for(let t=0;t<T;t++){s.push(cat(t?m.A[s[t-1]]:m.pi));o.push(cat(m.B[s[t]]));}return {s,o};}
+function check(m,o){validate(m);if(!o.length||o.some(v=>!Number.isInteger(v)||v<0||v>=m.B[0].length))throw Error('Símbolos inválidos');}
+function forward(m,o){check(m,o);let prev=m.pi,ll=0,f=[];for(let t=0;t<o.length;t++){let a=m.pi.map((_,j)=>(t?sum(prev.map((x,i)=>x*m.A[i][j])):m.pi[j])*m.B[j][o[t]]),c=sum(a);if(!c)return {logp:-Infinity,f};prev=a.map(x=>x/c);f.push(prev);ll+=Math.log(c);}return {logp:ll,f};}
+function viterbi(m,o){check(m,o);let d=m.pi.map((x,i)=>Math.log(x)+Math.log(m.B[i][o[0]])),back=[];for(let t=1;t<o.length;t++){let b=[],nd=m.pi.map((_,j)=>{const vals=d.map((v,i)=>v+Math.log(m.A[i][j]));b.push(argmax(vals));return Math.max(...vals)+Math.log(m.B[j][o[t]]);});back[t]=b;d=nd;}if(Math.max(...d)===-Infinity)throw Error('Secuencia imposible');let v=Array(o.length);v[o.length-1]=argmax(d);for(let t=o.length-2;t>=0;t--)v[t]=back[t+1][v[t+1]];return {v,logv:Math.max(...d)};}
+function metrics(s,v,f){const T=s.length,occ=[0,0,0],c=Array.from({length:3},()=>[0,0,0]);let entries=0,correct=0,episodes=[],run=0,brier=0;for(let t=0;t<T;t++){occ[s[t]]++;c[s[t]][v[t]]++;correct+=s[t]===v[t];if(t&&s[t]===2&&s[t-1]!==2)entries++;if(s[t]===2)run++;else if(run){episodes.push(run);run=0;}brier+=(f[t][2]-(s[t]===2?1:0))**2;}if(run)episodes.push(run);return {p_s1:occ[0]/T,p_s2:occ[1]/T,p_s3:occ[2]/T,entradas:entries,duracion_media:episodes.length?sum(episodes)/episodes.length:null,exactitud:correct/T,brier_filtrado:brier/T,confusion:c};}
+function stats(a){a=a.filter(x=>x!==null&&Number.isFinite(x));let n=a.length;if(!n)return null;let mean=sum(a)/n,sd=n>1?Math.sqrt(sum(a.map(x=>(x-mean)**2))/(n-1)):0;/* Aproximación normal para n>=30, distinta de t exacta Python. */return {n,mean,sd,min:Math.min(...a),max:Math.max(...a),lo:mean-1.96*sd/Math.sqrt(n),hi:mean+1.96*sd/Math.sqrt(n)};}
+const api={validate,rng,simulate,forward,viterbi,metrics,stats};if(typeof module!=='undefined')module.exports=api;root.HMM=api;
+})(typeof window==='undefined'?globalThis:window);

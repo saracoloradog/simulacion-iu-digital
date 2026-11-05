@@ -1,0 +1,51 @@
+GUION DE SUSTENTACIÓN — Sara Colorado Gil
+Duración prevista: 2:40 a 2:55 a ritmo conversacional. Máximo: 3 minutos.
+Las indicaciones entre corchetes no se leen.
+
+[0:00–0:20 | Mostrar portada]
+Una pausa en una conversación no significa necesariamente abandono.
+Y una confirmación aislada tampoco garantiza que todo avance bien.
+¿Cómo podemos estudiar lo que ocurre entre esas señales?
+Soy Sara Colorado Gil y este es mi proyecto de Simulación de la IU Digital.
+
+[0:20–0:45 | Mostrar modelo y matrices]
+Construí un Modelo Oculto de Markov con tres regímenes:
+avance positivo, fricción y riesgo de abandono.
+El modelo observa cinco categorías, como confirmaciones, aclaraciones y objeciones.
+Los estados son definiciones operacionales del simulador.
+No son diagnósticos de emociones.
+Todas las probabilidades son supuestos sintéticos.
+No provienen de conversaciones reales.
+
+[0:45–1:15 | Abrir simulador, avanzar y revelar estados]
+Primero genero el estado y después su señal observable.
+Forward calcula la verosimilitud y una probabilidad filtrada del estado actual.
+Viterbi reconstruye la trayectoria conjunta más probable.
+Aquí podemos revelar los estados verdaderos del simulador y comparar.
+Las frases son ilustraciones de categorías, no mensajes de un agente real.
+Una pausa temporal no termina la secuencia.
+La simulación termina al alcanzar el número de turnos configurado.
+
+[1:15–1:50 | Mostrar tabla de resultados y ocupación]
+Ejecuté mil réplicas de cien turnos por escenario.
+En total, trescientos mil turnos en la comparación principal.
+La ocupación del estado de riesgo fue seis coma noventa y cuatro por ciento en interacción estable.
+Con fricción llegó a cincuenta coma noventa y tres por ciento.
+En recuperación fue cinco coma cuarenta y uno por ciento.
+Estas cifras representan tiempo en un estado sintético.
+No son tasas de abandono real.
+
+[1:50–2:20 | Mostrar sensibilidad y laboratorio]
+También ejecuté tres mil setecientas cincuenta réplicas de sensibilidad.
+Modifiqué transiciones, emisiones y distribución inicial.
+Cuando las emisiones se vuelven iguales, las observaciones dejan de distinguir los estados.
+La exactitud restante puede explicarse por el estado predominante.
+El laboratorio permite cambiar matrices, validar probabilidades y exportar resultados.
+
+[2:20–2:50 | Mostrar pruebas y conclusión]
+Verifiqué los algoritmos con enumeración exhaustiva y ocho pruebas de Python.
+Además, Python y JavaScript coincidieron en tres secuencias de referencia.
+El aporte es un banco experimental reproducible que separa señal, estado e inferencia.
+El siguiente paso sería evaluar conversaciones consentidas y eventos reales de terminación.
+Concluyo que un HMM permite estudiar esta dinámica bajo supuestos explícitos.
+Predecir abandono en la práctica exige todavía validación externa.

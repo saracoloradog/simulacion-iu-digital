@@ -1,0 +1,13 @@
+test_deterministic (test_hmm.TestHMM.test_deterministic) ... ok
+test_exhaustive (test_hmm.TestHMM.test_exhaustive) ... ok
+test_long (test_hmm.TestHMM.test_long) ... ok
+test_observations (test_hmm.TestHMM.test_observations) ... ok
+test_repeat (test_hmm.TestHMM.test_repeat) ... ok
+test_rng (test_hmm.TestHMM.test_rng) ... ok
+test_validation (test_hmm.TestHMM.test_validation) ... ok
+test_zero (test_hmm.TestHMM.test_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.042s
+
+OK

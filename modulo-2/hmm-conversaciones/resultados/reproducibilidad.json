@@ -1,0 +1,13 @@
+{
+  "csv_identicos_al_repetir": 8,
+  "sha256": {
+    "sensibilidad_replicas.csv": "de7d45a0407f9c1764f0d22a980126f4914e284660b69f14c4ef09bc9981e7fc",
+    "esperanza_exacta.csv": "5bde2e385158304a38500c8bee5425981b6dd1e5420ec85df9f1ea68f70ced9f",
+    "replicas.csv": "5064e748fa310983e86b9382fcefdea1eb1eed6316007c8f4d3bde59a59e1d6b",
+    "sensibilidad.csv": "30f3c89fdec99acddb725e35c44f1bc6a5cde31118790137c49a1ad94ac6b50f",
+    "confusion_B.csv": "2a377257e84ad85063102b8d00f1bd5cc2f2dd0b1665cc7d423b6428ac52f5da",
+    "confusion_C.csv": "c05cd58488d6ec226b4bc780a008f764d40876ad7fce18498e16ba7e28fbc709",
+    "confusion_A.csv": "573fd578da56741d4ff16b83cd462eb7b6c78460b61c9d5fb731f60966913177",
+    "resumen.csv": "25e084095b9bd4e19a235ff68db309ed01dbd54a5dabac27ab211ea98ada44d8"
+  }
+}

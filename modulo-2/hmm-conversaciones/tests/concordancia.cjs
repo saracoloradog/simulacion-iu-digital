@@ -1,0 +1,5 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.join(__dirname,'..'),H=require('../hmm.js'),d=JSON.parse(fs.readFileSync(path.join(root,'modelos.json'))),refs=JSON.parse(fs.readFileSync(path.join(root,'resultados/referencia.json')));
+for(const r of refs){const m={A:d.A[r.escenario],B:d.B,pi:d.pi},{s,o}=H.simulate(m,100,r.semilla),{v,logv}=H.viterbi(m,o),{logp,f}=H.forward(m,o);assert.deepEqual(s,r.s);assert.deepEqual(o,r.o);assert.deepEqual(v,r.v);assert.ok(Math.abs(logp-r.logp)<1e-10);assert.ok(Math.abs(logv-r.logv)<1e-10);for(let t=0;t<100;t++)for(let j=0;j<3;j++)assert.ok(Math.abs(f[t][j]-r.filtrado[t][j])<1e-12);}
+let m={A:[[1]],B:[[1,0]],pi:[1]};assert.equal(H.forward(m,[1]).logp,-Infinity);assert.throws(()=>H.viterbi(m,[1]));assert.throws(()=>H.validate({A:[[.5]],B:[[1]],pi:[1]}));
+console.log('Concordancia Python/JavaScript: 3 secuencias de 100 turnos, estados, símbolos, Viterbi exactos; Forward y filtros tolerancia 1e-10/1e-12. Casos imposibles y validación: OK.');
