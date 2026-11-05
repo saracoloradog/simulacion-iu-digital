@@ -1,0 +1,290 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=23mm]{geometry}
+\usepackage{fontspec}\setmainfont{DejaVu Serif}
+\usepackage[spanish]{babel}\usepackage{amsmath,graphicx,longtable,booktabs,hyperref,xcolor}
+\definecolor{institucional}{HTML}{203A5E}\hypersetup{colorlinks=true,urlcolor=institucional}
+\title{Estados conversacionales latentes y riesgo de abandono: Simulación y comparación de tres escenarios con HMM}
+\author{Sara Colorado Gil\\IU Digital de Antioquia\\Ingeniería de Software y Datos\\Simulación · Actividad didáctica 2 · Módulo 2\\Docente: Julián Andrés Loaiza López}
+\date{Noviembre de 2026}\begin{document}\maketitle\newpage
+\section*{1. Resumen e introducción}
+En este trabajo desarrollé una simulación para analizar cómo pueden cambiar los estados de una conversación con un agente de inteligencia artificial. Utilicé un Modelo Oculto de Markov (HMM) con tres estados: avance positivo, fricción y riesgo de abandono. Estos estados generan cinco tipos de señales observables, como confirmaciones, aclaraciones y objeciones. Implementé los algoritmos Forward y Viterbi en Python y JavaScript para calcular la probabilidad de las secuencias y comparar los estados generados con los estimados. Evalué tres escenarios mediante 1.000 réplicas de 100 turnos por escenario y realicé 3.750 réplicas adicionales de sensibilidad. La ocupación media del estado de riesgo fue 6,94 \% en interacción estable, 50,93 \% con fricción y 5,41 \% con recuperación. La exactitud de Viterbi fue 80,18 \%, 67,66 \% y 77,76 \%, respectivamente. Los resultados permiten observar cómo influyen las matrices en la dinámica y en la identificación de los estados. También muestran que una exactitud alta debe interpretarse junto con la frecuencia de cada estado. La simulación utiliza parámetros supuestos y no conversaciones reales; por eso, sus resultados describen el modelo y no una tasa de abandono observada.
+
+
+Palabras clave: modelos ocultos de Markov; simulación; conversaciones con IA; Viterbi; reproducibilidad.
+
+
+\subsection*{1.1 Problema y objetivo}
+En una conversación, pedir una aclaración puede indicar dificultad para continuar, pero también interés en entender mejor. Por eso, una señal aislada no permite saber con certeza cómo va la interacción. En esta actividad utilicé un HMM para representar esa diferencia entre lo que se observa y el estado que se intenta identificar.
+
+
+El objetivo fue implementar una simulación reproducible, comparar tres escenarios y revisar qué tan bien Viterbi reconoce los estados que el propio modelo genera. El aporte de la actividad está en reunir el modelo, los experimentos y dos laboratorios que permiten revisar las probabilidades y sus efectos.
+
+
+\subsection*{1.2 Preguntas de investigación}
+P1. ¿Cómo representar la evolución de una conversación mediante un HMM? P2. ¿Cómo influyen las probabilidades de transición y emisión en los resultados y en la identificación del riesgo? P3. ¿Qué tan reproducible y sensible es el modelo al cambiar las condiciones iniciales y sus matrices?
+
+
+\clearpage
+\section*{2. Estado del arte}
+Para ubicar el tema consulté once publicaciones de 2022–2025 en ACL Anthology, PMLR, JMLR y páginas editoriales. La búsqueda se centró en HMM, fallos de diálogo, satisfacción del usuario y cambios entre turnos. Fue una revisión dirigida, no una revisión sistemática. Verifiqué los metadatos y los resúmenes en las fuentes originales; no comprobé la indexación individual en Scopus o Web of Science.
+
+
+{\small\begin{longtable}{p{0.31\linewidth}p{0.31\linewidth}p{0.31\linewidth}}\caption{Tabla 1. Publicaciones consultadas y relación con la actividad}\\\topruleRef. / año & Enfoque del trabajo & Para qué me sirve\\\midrule\endfirsthead
+[1] 2023 & HMM: aprendizaje con consultas condicionales & Distinguir aprender parámetros de usar un modelo ya definido.\\
+[2] 2023 & HMM: observaciones ausentes & Diferenciar una pausa observada de un dato ausente.\\
+[3] 2023 & HMM: emisiones en espacios topológicos & Reconocer extensiones del HMM más allá de categorías.\\
+[4] 2022 & Contexto: aprendizaje semisupervisado, no HMM & Entender la necesidad de etiquetas para evaluar fallos.\\
+[5] 2022 & Contexto: detección de ruptura, no HMM & Considerar la historia de la conversación.\\
+[6] 2022 & Contexto: taxonomía de errores, no HMM & Definir categorías con criterios claros.\\
+[7] 2023 & Contexto: esquema y satisfacción, no HMM & Distinguir satisfacción y cumplimiento de una tarea.\\
+[8] 2023 & Contexto: proceso de Hawkes, no HMM & Reconocer otra forma de estudiar cambios entre turnos.\\
+[9] 2024 & Contexto: evaluación contrafactual, no HMM & Revisar el efecto del desbalance y la robustez.\\
+[10] 2024 & Contexto: LLM y rúbricas SPUR, no HMM & Conocer el uso de rúbricas para interpretar señales.\\
+[11] 2025 & Contexto: estrategia y recuperación PRAISE, no HMM & Conocer un enfoque de estrategias y recuperación de información.\\
+\bottomrule\end{longtable}}
+Los trabajos [1]–[3] estudian HMM, aunque no usan el modelo conversacional de esta actividad. Los trabajos [4]–[11] ayudan a entender la detección de fallos y la satisfacción. Por ejemplo, [8] utiliza un proceso de Hawkes y [10]–[11] emplean modelos de lenguaje; no son aplicaciones de HMM.
+
+
+Estos antecedentes muestran que el análisis de conversaciones puede abordarse con métodos distintos. Aquí elegí una versión discreta y pequeña para poder explicar sus matrices y comprobar los algoritmos. No comparé mis puntuaciones con las de esos artículos, porque sus datos, etiquetas y tareas son diferentes.
+
+
+\clearpage
+\section*{3. Marco teórico: estados y observaciones}
+Un HMM combina dos niveles: los estados cambian siguiendo una cadena de Markov y cada estado produce observaciones con ciertas probabilidades. En la simulación conozco el estado verdadero porque lo genero. Al aplicar el algoritmo, utilizo solo las observaciones para estimarlo.
+
+
+\subsection*{3.1 Qué representa cada elemento}
+S=\{S1,S2,S3\}: avance positivo, fricción y riesgo de abandono. Son formas de describir el comportamiento del modelo, no emociones diagnosticadas. V: confirmación, información, aclaración, objeción y pausa. Cada turno corresponde a una categoría del usuario; las frases del simulador solo ilustran esas categorías.
+
+
+\[\lambda=(S,V,A,B,\pi),\quad A_{ij}=P(S_{t+1}=j\mid S_t=i),\quad B_{jk}=P(O_t=k\mid S_t=j)\]
+A indica cómo cambia el estado entre turnos; B, qué señales puede emitir cada estado; y π, en qué estado empieza la secuencia. Utilicé matrices fila-estocásticas: cada fila contiene probabilidades entre cero y uno y suma uno. A tiene tamaño 3×3, B tiene tamaño 3×5 y π contiene tres valores.
+
+
+\subsection*{3.2 Supuestos del modelo}
+\[P(S_{t+1}\mid S_{1:t})=P(S_{t+1}\mid S_t),\quad P(O_t\mid S_{1:t},O_{1:t-1})=P(O_t\mid S_t)\]
+La propiedad de Markov supone que el siguiente estado depende del actual. Además, la observación de un turno depende de su estado, una vez conocido este. Mantengo las matrices constantes durante cada corrida. Estas simplificaciones permiten trabajar con el modelo, aunque una conversación real puede depender de una historia más larga.
+
+
+\[P(s_{1:T},o_{1:T})=\pi_{s_1}B_{s_1,o_1}\prod_{u=2}^T A_{s_{u-1},s_u}B_{s_u,o_u}\]
+\begin{figure}[ht]\centering\includegraphics[width=\linewidth]{../figuras/estructura.png}\caption{Diagrama 1. Dos capas del HMM. Los subíndices indican turnos, no los regímenes S1–S3.}\end{figure}
+La pausa es una interrupción temporal y no termina la conversación. Las secuencias finalizan al llegar al número de turnos fijado. Por tanto, estar en S3 no equivale a abandonar realmente. Para estudiar ese desenlace se necesitarían eventos de terminación y un modelo que los incluyera.
+
+
+\clearpage
+\section*{3. Matrices y escenarios}
+{\small\begin{longtable}{p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}}\caption{Tabla 2. Transiciones A: filas S1–S3, columnas S1–S3}\\\topruleEscenario / origen & A S1 & A S2 & A S3\\\midrule\endfirsthead
+A / S1 & 0.88 & 0.10 & 0.02\\
+A / S2 & 0.35 & 0.55 & 0.10\\
+A / S3 & 0.20 & 0.30 & 0.50\\
+B / S1 & 0.55 & 0.35 & 0.10\\
+B / S2 & 0.10 & 0.55 & 0.35\\
+B / S3 & 0.05 & 0.20 & 0.75\\
+C / S1 & 0.80 & 0.17 & 0.03\\
+C / S2 & 0.55 & 0.35 & 0.10\\
+C / S3 & 0.45 & 0.35 & 0.20\\
+\bottomrule\end{longtable}}
+{\small\begin{longtable}{p{0.155\linewidth}p{0.155\linewidth}p{0.155\linewidth}p{0.155\linewidth}p{0.155\linewidth}p{0.155\linewidth}}\caption{Tabla 3. Emisiones B, compartidas por los tres escenarios}\\\topruleEstado & Conf. & Info. & Aclar. & Objec. & Pausa\\\midrule\endfirsthead
+S1 & 0.55 & 0.30 & 0.10 & 0.04 & 0.01\\
+S2 & 0.12 & 0.20 & 0.42 & 0.20 & 0.06\\
+S3 & 0.04 & 0.08 & 0.18 & 0.35 & 0.35\\
+\bottomrule\end{longtable}}
+Distribución inicial: π=(0,70; 0,20; 0,10). Supuse que la mayoría de las secuencias comienza en avance positivo, aunque algunas pueden empezar con fricción o riesgo. B y π son iguales en los tres escenarios; en la comparación principal solo cambia A.
+
+
+\subsection*{Escenario A: interacción estable}
+La probabilidad de seguir en avance es 0,88 y la de pasar directamente de avance a riesgo es 0,02. Con esto representé una interacción que suele continuar de forma positiva.
+
+
+\subsection*{Escenario B: interacción con fricción}
+La transición de fricción a riesgo aumenta a 0,35 y la permanencia en riesgo es 0,75. Esto hace más probable llegar a S3 y permanecer allí durante varios turnos.
+
+
+\subsection*{Escenario C: recuperación conversacional}
+Las probabilidades de volver a avance desde fricción y riesgo son 0,55 y 0,45. La permanencia en riesgo baja a 0,20. Es una condición alternativa de simulación, no una intervención cuya eficacia se haya probado con usuarios.
+
+
+En B, cada fila enumera las cinco señales posibles. Por ejemplo, S1 asigna 0,55 a confirmación y 0,30 a información; S2 asigna 0,42 a aclaración; y S3 asigna 0,35 tanto a objeción como a pausa. Todas las señales pueden aparecer en los tres estados. Ese solapamiento explica por qué una observación no basta para identificar el estado con seguridad. Los valores son supuestos del ejercicio, no estimaciones de un conjunto de conversaciones.
+
+
+\clearpage
+\section*{4. Metodología: simulación e inferencia}
+\subsection*{4.1 Generación de secuencias}
+Retomé de la guía del docente [12] los componentes del HMM y los algoritmos de evaluación y decodificación. Adapté los ejemplos a las conversaciones y definí las matrices de la página anterior. Para cada turno muestreo primero un estado y después una observación. El muestreo es categórico: un número uniforme selecciona uno de los intervalos definidos por las probabilidades de la fila correspondiente.
+
+
+Usé el mismo generador LCG32 y el mismo orden de muestreo en Python y JavaScript: x←(1664525x+1013904223) mod 2³²; u=x/2³². Así se pueden obtener las mismas secuencias con la misma semilla. La lista de 1.000 semillas del experimento se creó con NumPy SeedSequence(20261105).generate\_state(1000). El LCG facilita la comprobación entre lenguajes, pero no demuestra independencia matemática entre sus subflujos.
+
+
+\subsection*{4.2 Forward: probabilidad de las observaciones}
+\[\alpha_t(j)=\left[\sum_i f_{t-1}(i)A_{ij}\right]B_j(O_t),\quad c_t=\sum_j\alpha_t(j),\quad f_t=\alpha_t/c_t\]\[\log P(O)=\sum_t\log c_t\]
+Forward suma la probabilidad de las distintas trayectorias que podrían producir las observaciones. Divido por cₜ en cada paso para evitar que los productos de probabilidades se vuelvan demasiado pequeños. La suma de logaritmos conserva la log-verosimilitud. El vector fₜ también indica la probabilidad del estado actual usando las señales disponibles hasta ese turno. Si cₜ=0, la secuencia es imposible bajo el modelo.
+
+
+\subsection*{4.3 Viterbi: trayectoria más probable}
+\[\delta_1(j)=\log\pi_j+\log B_j(O_1)\]\[\delta_t(j)=\max_i[\delta_{t-1}(i)+\log A_{ij}]+\log B_j(O_t)\]
+Viterbi conserva el mejor camino hacia cada estado y, al terminar, reconstruye la trayectoria completa. Lo implementé en logaritmos para mantener la estabilidad numérica. Ante empates se elige el primer índice; una ruta imposible se rechaza. La trayectoria más probable puede contener errores por turno y no es una predicción del abandono futuro.
+
+
+\begin{verbatim}
+validar(A,B,π)
+para cada réplica y escenario:
+  s,o ← muestreo_categórico(modelo,T,semilla)
+  logp,f ← Forward_escalado(o)
+  v ← Viterbi_logarítmico(o)
+  guardar métricas(s,v,f), semilla y escenario
+agrupar por réplica; calcular IC y exportar CSV
+\end{verbatim}
+\clearpage
+\section*{4. Diseño de los experimentos}
+Comparé los tres escenarios con 1.000 réplicas de 100 turnos: 300.000 observaciones en total. Utilicé la misma lista de semillas, la misma B y la misma π para que la comparación se centrara en A. No ajusté ni entrené las matrices con datos; el algoritmo conoce los parámetros con los que se generó cada secuencia.
+
+
+{\small\begin{longtable}{p{0.465\linewidth}p{0.465\linewidth}}\caption{Tabla 4. Estimandos y reglas de cálculo}\\\topruleMétrica & Definición / unidad\\\midrule\endfirsthead
+Ocupación Sᵢ & Número de turnos en Sᵢ dividido por T, por réplica.\\
+Entradas a riesgo & Conteo de transiciones S1/S2→S3. Excluye iniciar en S3.\\
+Duración de riesgo & Media de longitudes de episodios dentro de cada réplica con riesgo.\\
+Exactitud & Fracción de etiquetas Viterbi iguales a la verdad sintética.\\
+Confusión & Filas verdaderas, columnas estimadas; conteos y normalización por fila.\\
+Brier filtrado & Media de (fₜ(S3)−1\{Sₜ=S3\})²; menor es mejor.\\
+\bottomrule\end{longtable}}
+Para cada métrica calculé media, desviación estándar, mínimo, máximo e intervalo de confianza del 95 \%. La unidad de cálculo es la réplica completa. No traté los turnos como datos independientes, porque los estados de turnos cercanos están relacionados.
+
+
+\[IC_{95\%}=\bar{x}\pm t_{0.975,n-1}\frac{s}{\sqrt{n}},\quad s^2=\frac{\sum_r(x_r-\bar{x})^2}{n-1}\]
+El intervalo usa la distribución t de Student y la desviación muestral s. Expresa la variación entre corridas del simulador; no la incertidumbre sobre si las matrices representan conversaciones reales. En el laboratorio web se usa la aproximación 1,96 y se requieren al menos 30 réplicas.
+
+
+\subsection*{Duración de los episodios}
+Una entrada a riesgo cuenta un cambio de S1 o S2 hacia S3; comenzar en S3 no cuenta como entrada. Para la duración calculé la media de episodios en cada réplica con riesgo. Las réplicas sin riesgo tienen duración vacía y no entran en ese promedio. Incluí los episodios cortados por el inicio o el final de la secuencia: por ello se informa duración observada, no duración completa sin sesgo. Los CSV también guardan precisión y sensibilidad para S3 cuando sus denominadores son positivos.
+
+
+\subsection*{Cambios controlados de parámetros}
+Realicé 3.750 réplicas adicionales: tres factores, cinco niveles y 250 corridas por nivel, siempre con 100 turnos. Probé Bε=(1−ε)B+εU, donde U es uniforme; Aε=(1−ε)Aestable+εAfricción; y πε=(1−ε)π+ε(0,0,1). Los niveles fueron 0; 0,25; 0,50; 0,75 y 1. Estas mezclas conservan filas válidas. El análisis principal usa la misma matriz perturbada para generar y estimar; además, el CSV guarda la exactitud al estimar con el modelo nominal.
+
+
+\clearpage
+\section*{5. Resultados: estados y exactitud}
+{\small\begin{longtable}{p{0.186\linewidth}p{0.186\linewidth}p{0.186\linewidth}p{0.186\linewidth}p{0.186\linewidth}}\caption{Tabla 5. Resultados ejecutados, 1.000 réplicas por escenario}\\\topruleEsc. & Riesgo medio & IC95 \% riesgo & Exactitud & IC95 \% exactitud\\\midrule\endfirsthead
+A & 6.94 \% & [6.67 \%, 7.21 \%] & 80.18 \% & [79.80 \%, 80.56 \%]\\
+B & 50.93 \% & [50.37 \%, 51.49 \%] & 67.66 \% & [67.27 \%, 68.06 \%]\\
+C & 5.41 \% & [5.24 \%, 5.58 \%] & 77.76 \% & [77.44 \%, 78.07 \%]\\
+\bottomrule\end{longtable}}
+\begin{figure}[ht]\centering\includegraphics[width=\linewidth]{../figuras/ocupacion.png}\caption{Figura 1. Ocupación media por estado. Barras calculadas desde replicas.csv; no corresponden a abandono efectivo.}\end{figure}
+En el escenario B, las conversaciones simuladas pasaron cerca de la mitad de sus turnos en riesgo. En A y C, esa proporción fue menor al 7 \%. El resultado es coherente con las matrices: B facilita la entrada a S3 y hace más probable permanecer en ese estado.
+
+
+El escenario C tuvo menos riesgo que A, pero también una exactitud de Viterbi algo menor. Esto muestra que tener poco riesgo no significa que los estados sean más fáciles de reconocer. Las transiciones más rápidas de C pueden limitar la utilidad de observar varios turnos del mismo estado.
+
+
+La exactitud compara etiquetas estimadas con estados generados. Por ejemplo, 80,18 \% en A significa que Viterbi identificó correctamente esa proporción de turnos, en promedio. No significa que el modelo prediga correctamente el abandono de personas reales.
+
+
+Como comprobación adicional calculé la ocupación esperada con (1/T)ΣₜπAᵗ, para t=0,…,T−1. La expectativa de S3 fue 7,10 \% en A, 51,57 \% en B y 5,52 \% en C. Las diferencias con las medias simuladas son pequeñas, aunque no todos los valores teóricos tienen que quedar dentro del IC de una corrida experimental. El cálculo completo está en esperanza\_exacta.csv.
+
+
+\clearpage
+\section*{5. Episodios de riesgo y errores de estimación}
+{\small\begin{longtable}{p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}}\caption{Tabla 6. Estadísticos adicionales; media ± desviación entre réplicas}\\\topruleEsc. & Entradas S3 & Duración observada & Brier filtrado\\\midrule\endfirsthead
+A & 3.391 ± 1.754 & 1.997 ± 0.915 & 0.044 ± 0.023\\
+B & 13.081 ± 2.334 & 3.987 ± 1.049 & 0.165 ± 0.025\\
+C & 4.276 ± 1.978 & 1.232 ± 0.276 & 0.040 ± 0.018\\
+\bottomrule\end{longtable}}
+\begin{figure}[ht]\centering\includegraphics[width=\linewidth]{../figuras/confusion.png}\caption{Figura 2. Matrices de confusión normalizadas por fila. El CSV conserva los conteos originales para inspeccionar el desbalance.}\end{figure}
+La matriz de confusión permite ver algo que el promedio de exactitud oculta: qué estados se reconocen mejor y cuáles se confunden. Las filas son los estados verdaderos y las columnas, los estimados. La diagonal muestra los aciertos; los demás valores muestran errores. Los archivos CSV conservan los conteos antes de normalizar.
+
+
+\begin{figure}[ht]\centering\includegraphics[width=\linewidth]{../figuras/trayectoria.png}\caption{Figura 3. Primera réplica del escenario B: estados sintéticos y ruta Viterbi; semilla registrada en referencia.json.}\end{figure}
+En la trayectoria aparecen episodios breves que Viterbi no siempre recupera. El algoritmo puede preferir un camino más estable cuando las señales son ambiguas. Además, usa la secuencia completa: al añadir observaciones puede cambiar una etiqueta anterior. Por eso distinguí esta reconstrucción de la probabilidad filtrada de Forward, que solo utiliza lo observado hasta el turno actual.
+
+
+\clearpage
+\section*{5. Sensibilidad y 6. Discusión}
+\begin{figure}[ht]\centering\includegraphics[width=\linewidth]{../figuras/sensibilidad.png}\caption{Figura 4. Sensibilidad por factor, 250 réplicas por nivel. Las bandas son IC95 \% entre réplicas.}\end{figure}
+{\small\begin{longtable}{p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}p{0.233\linewidth}}\caption{Tabla 7. Pérdida de información de B: exactitud de Viterbi}\\\topruleε & Exactitud media & DE & IC95 \%\\\midrule\endfirsthead
+0.00 & 79.92 \% & 6.15 \% & [79.15 \%, 80.68 \%]\\
+0.25 & 73.96 \% & 7.51 \% & [73.03 \%, 74.90 \%]\\
+0.50 & 72.84 \% & 8.31 \% & [71.81 \%, 73.88 \%]\\
+0.75 & 72.84 \% & 8.31 \% & [71.81 \%, 73.88 \%]\\
+1.00 & 72.84 \% & 8.31 \% & [71.81 \%, 73.88 \%]\\
+\bottomrule\end{longtable}}
+Al mezclar B con emisiones uniformes, la exactitud pasó de 79,92 \% a 72,84 \%. Con ε=1 las filas son iguales: las observaciones ya no ayudan a distinguir los estados. La exactitud restante se explica por las probabilidades de transición y por el predominio de S1. Esta es una razón para revisar la confusión por estado y no quedarse solo con la exactitud global.
+
+
+Al cambiar π hacia un inicio seguro en S3, la ocupación media de riesgo pasó de 6,70 \% a 8,51 \% durante cien turnos. El efecto inicial sigue presente, aunque las transiciones lo reducen con el tiempo. La mezcla de A muestra el cambio gradual entre interacción estable y con fricción. Las bandas representan IC entre réplicas; no las utilicé como una prueba de diferencias entre niveles. Para esa prueba habría que analizar las diferencias de las réplicas emparejadas.
+
+
+\subsection*{6.1 Alcance y limitaciones}
+La principal limitación es que el modelo genera los datos y conoce sus propios parámetros al estimar los estados. Es una condición favorable que permite comprobar la implementación, pero no medir su utilidad con usuarios. Tampoco modelé un evento terminal de abandono. La duración incluye episodios cortados en los bordes y el generador pseudoaleatorio tiene las limitaciones señaladas. Estas condiciones deben acompañar la interpretación de las cifras.
+
+
+\clearpage
+\section*{7. Conclusiones, trabajo futuro y anexos}
+\subsection*{7.1 Respuestas a las preguntas}
+P1. Representé la conversación con tres estados, cinco observaciones y las matrices A, B y π. Esta separación permite que una misma señal tenga varias explicaciones posibles y que el algoritmo use el orden de los turnos para estimar los estados.
+
+
+P2. Las probabilidades cambian tanto la evolución como la dificultad de identificarla. La ocupación de riesgo fue 6,94 \% en A, 50,93 \% en B y 5,41 \% en C. La sensibilidad de B mostró que, si las emisiones dejan de diferenciar estados, las observaciones pierden utilidad. Por ello conviene interpretar juntas las matrices, la ocupación y la exactitud.
+
+
+P3. Con las mismas semillas y parámetros se repitieron las secuencias y los ocho CSV. Python y JavaScript coincidieron en los tres casos de referencia. Los cambios controlados de A, B y π permitieron comparar la sensibilidad sin producir probabilidades inválidas. Esta reproducibilidad comprueba el cálculo; no reemplaza una validación con conversaciones reales.
+
+
+\subsection*{7.2 «Usa, modifica y crea»}
+Usé de los materiales del docente [12] la estructura del HMM y sus algoritmos. Modifiqué el dominio y las categorías para estudiar conversaciones. Creé las matrices, los escenarios, los experimentos de sensibilidad y los laboratorios. Las cifras presentadas provienen del código ejecutado, no de los resultados ilustrativos de la plantilla.
+
+
+\subsection*{7.3 Trabajo futuro}
+El siguiente paso sería definir y anotar conversaciones consentidas, distinguir pausas de terminaciones y separar datos de entrenamiento y prueba. También sería útil comparar el HMM con una clasificación que no use el historial. Antes de usarlo para alertas habría que revisar sus errores y la calibración de las probabilidades.
+
+
+\subsection*{7.4 Implementaciones y reproducibilidad}
+Simulador conversacional · Laboratorio HMM · Artículo PDF · Réplicas CSV · Sensibilidad CSV · Código y README. El README contiene los comandos; VALIDACION.md registra las comprobaciones y manifiesto.json conserva las versiones y huellas de los resultados.
+
+
+\subsection*{7.5 Video final de sustentación}
+Espacio reservado para enlazar el video final cuando esté grabado. Duración máxima: tres minutos. El artículo PDF es el archivo complementario para la entrega en Canvas.
+
+
+\clearpage
+\section*{8. Referencias IEEE}
+[1] G. Mahajan, S. Kakade, A. Krishnamurthy y C. Zhang, “Learning Hidden Markov Models Using Conditional Samples,” Proc. COLT, PMLR, vol. 195, pp. 2014–2066, 2023. [En línea]. Disponible: https://proceedings.mlr.press/v195/mahajan23a.html. [Consulta: 5-nov-2026].
+
+
+[2] B. Perets, M. Kozdoba y S. Mannor, “Learning Hidden Markov Models When the Locations of Missing Observations are Unknown,” Proc. ICML, PMLR, vol. 202, pp. 27642–27667, 2023. [En línea]. Disponible: https://proceedings.mlr.press/v202/perets23a.html. [Consulta: 5-nov-2026].
+
+
+[3] A. B. Kashlak, P. Loliencar y G. Heo, “Topological Hidden Markov Models,” Journal of Machine Learning Research, vol. 24, no. 340, pp. 1–49, 2023. [En línea]. Disponible: https://www.jmlr.org/papers/v24/22-0685.html. [Consulta: 5-nov-2026].
+
+
+[4] Q. Lin y H. T. Ng, “A Semi-supervised Learning Approach with Two Teachers to Improve Breakdown Identification in Dialogues,” Proc. AAAI, vol. 36, no. 10, pp. 11011–11019, 2022. doi: 10.1609/aaai.v36i10.21349. [En línea]. Disponible: https://ojs.aaai.org/index.php/AAAI/article/view/21349. [Consulta: 5-nov-2026].
+
+
+[5] L. de Andrade e I. Paraboni, “Human-computer dialogue breakdown detection,” Linguamática, vol. 14, no. 1, pp. 17–31, 2022. doi: 10.21814/lm.14.1.354. [En línea]. Disponible: https://www.linguamatica.com/index.php/linguamatica/en/article/view/354. [Consulta: 5-nov-2026].
+
+
+[6] R. Higashinaka, M. Araki, H. Tsukahara y M. Mizukami, “Classification of Utterances that Lead to Dialogue Breakdowns in Chat-oriented Dialogue Systems,” Journal of Natural Language Processing, vol. 29, no. 2, pp. 443–466, 2022. doi: 10.5715/jnlp.29.443. [En línea]. Disponible: https://www.jstage.jst.go.jp/article/jnlp/29/2/29\_443/\_article/-char/en. [Consulta: 5-nov-2026].
+
+
+\clearpage
+\section*{8. Referencias IEEE (continuación)}
+[7] Yue Feng, Yunlong Jiao, Animesh Prasad et al., “Schema-Guided User Satisfaction Modeling for Task-Oriented Dialogues,” Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), 2023. doi: 10.18653/v1/2023.acl-long.116. [En línea]. Disponible: https://aclanthology.org/2023.acl-long.116/. [Consulta: 5-nov-2026].
+
+
+[8] Fanghua Ye, Zhiyuan Hu, Emine Yilmaz, “Modeling User Satisfaction Dynamics in Dialogue via Hawkes Process,” Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), 2023. doi: 10.18653/v1/2023.acl-long.494. [En línea]. Disponible: https://aclanthology.org/2023.acl-long.494/. [Consulta: 5-nov-2026].
+
+
+[9] Amin Abolghasemi, Zhaochun Ren, Arian Askari et al., “CAUSE: Counterfactual Assessment of User Satisfaction Estimation in Task-Oriented Dialogue Systems,” Findings of the Association for Computational Linguistics: ACL 2024, 2024. doi: 10.18653/v1/2024.findings-acl.871. [En línea]. Disponible: https://aclanthology.org/2024.findings-acl.871/. [Consulta: 5-nov-2026].
+
+
+[10] Ying-Chun Lin, Jennifer Neville, Jack Stokes et al., “Interpretable User Satisfaction Estimation for Conversational Systems with Large Language Models,” Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), 2024. doi: 10.18653/v1/2024.acl-long.598. [En línea]. Disponible: https://aclanthology.org/2024.acl-long.598/. [Consulta: 5-nov-2026].
+
+
+[11] Sangyeop Kim, Sohhyung Park, Jaewon Jung et al., “LLM-guided Plan and Retrieval: A Strategic Alignment for Interpretable User Satisfaction Estimation in Dialogue,” Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers), 2025. doi: 10.18653/v1/2025.naacl-long.523. [En línea]. Disponible: https://aclanthology.org/2025.naacl-long.523/. [Consulta: 5-nov-2026].
+
+
+[12] J. A. Loaiza López, «Modelos de Markov y Modelos Ocultos de Markov: guía explicativa», clases semanas 3–5, ejemplos HMM y artículo guía de redacción, material de la asignatura Simulación, IU Digital de Antioquia, 2026. Material suministrado por la estudiante; se usa como referencia pedagógica.
+
+
+\clearpage
+\end{document}

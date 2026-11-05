@@ -1,0 +1,119 @@
+[
+  {
+    "url": "https://aclanthology.org/2023.acl-long.116/",
+    "title": "Schema-Guided User Satisfaction Modeling for Task-Oriented Dialogues",
+    "authors": [
+      "Yue Feng",
+      "Yunlong Jiao",
+      "Animesh Prasad",
+      "Nikolaos Aletras",
+      "Emine Yilmaz",
+      "Gabriella Kazai"
+    ],
+    "year": [
+      "2023/7"
+    ],
+    "doi": [
+      "10.18653/v1/2023.acl-long.116"
+    ],
+    "venue": [
+      "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+    ],
+    "method": "Contexto conversacional; no HMM"
+  },
+  {
+    "url": "https://aclanthology.org/2023.acl-long.494/",
+    "title": "Modeling User Satisfaction Dynamics in Dialogue via Hawkes Process",
+    "authors": [
+      "Fanghua Ye",
+      "Zhiyuan Hu",
+      "Emine Yilmaz"
+    ],
+    "year": [
+      "2023/7"
+    ],
+    "doi": [
+      "10.18653/v1/2023.acl-long.494"
+    ],
+    "venue": [
+      "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+    ],
+    "method": "Contexto conversacional; no HMM"
+  },
+  {
+    "url": "https://aclanthology.org/2024.findings-acl.871/",
+    "title": "CAUSE: Counterfactual Assessment of User Satisfaction Estimation in Task-Oriented Dialogue Systems",
+    "authors": [
+      "Amin Abolghasemi",
+      "Zhaochun Ren",
+      "Arian Askari",
+      "Mohammad Aliannejadi",
+      "Maarten de Rijke",
+      "Suzan Verberne"
+    ],
+    "year": [
+      "2024/8"
+    ],
+    "doi": [
+      "10.18653/v1/2024.findings-acl.871"
+    ],
+    "venue": [
+      "Findings of the Association for Computational Linguistics: ACL 2024"
+    ],
+    "method": "Contexto conversacional; no HMM"
+  },
+  {
+    "url": "https://aclanthology.org/2024.acl-long.598/",
+    "title": "Interpretable User Satisfaction Estimation for Conversational Systems with Large Language Models",
+    "authors": [
+      "Ying-Chun Lin",
+      "Jennifer Neville",
+      "Jack Stokes",
+      "Longqi Yang",
+      "Tara Safavi",
+      "Mengting Wan",
+      "Scott Counts",
+      "Siddharth Suri",
+      "Reid Andersen",
+      "Xiaofeng Xu",
+      "Deepak Gupta",
+      "Sujay Kumar Jauhar",
+      "Xia Song",
+      "Georg Buscher",
+      "Saurabh Tiwary",
+      "Brent Hecht",
+      "Jaime Teevan"
+    ],
+    "year": [
+      "2024/8"
+    ],
+    "doi": [
+      "10.18653/v1/2024.acl-long.598"
+    ],
+    "venue": [
+      "Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+    ],
+    "method": "Contexto conversacional; no HMM"
+  },
+  {
+    "url": "https://aclanthology.org/2025.naacl-long.523/",
+    "title": "LLM-guided Plan and Retrieval: A Strategic Alignment for Interpretable User Satisfaction Estimation in Dialogue",
+    "authors": [
+      "Sangyeop Kim",
+      "Sohhyung Park",
+      "Jaewon Jung",
+      "Jinseok Kim",
+      "Sungzoon Cho"
+    ],
+    "year": [
+      "2025/4"
+    ],
+    "doi": [
+      "10.18653/v1/2025.naacl-long.523"
+    ],
+    "venue": [
+      "Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)"
+    ],
+    "method": "Contexto conversacional; no HMM"
+  }
+]

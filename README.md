@@ -39,3 +39,14 @@ El experimento de Montecarlo repite **lanzamientos independientes de cinco dados
 **Autora:** Sara Colorado Gil.
 
 La página del laboratorio permite ejecutar entre 100 y 100.000 lanzamientos, observar las frecuencias y exportar un CSV. Está construida en JavaScript y funciona sin servidor.
+
+## Módulo 2: conversaciones y Modelos Ocultos de Markov
+
+Simulación de tres escenarios conversacionales con Forward, Viterbi y análisis
+de sensibilidad. Los resultados proceden de experimentos con datos sintéticos.
+
+- [Informe académico](https://saracoloradog.github.io/simulacion-iu-digital/modulo-2/hmm-conversaciones/)
+- [Simulador conversacional](https://saracoloradog.github.io/simulacion-iu-digital/modulo-2/hmm-conversaciones/demo.html)
+- [Laboratorio HMM](https://saracoloradog.github.io/simulacion-iu-digital/modulo-2/hmm-conversaciones/laboratorio.html)
+- [Artículo PDF](modulo-2/hmm-conversaciones/articulo/articulo.pdf)
+- [Código, resultados e instrucciones](modulo-2/hmm-conversaciones/README.md)

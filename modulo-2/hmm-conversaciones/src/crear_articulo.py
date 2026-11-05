@@ -27,8 +27,8 @@ def para(s,sty='p'):return Paragraph(clean(s),styles[sty])
 def foot(c,d):
  w,h=d.pagesize;c.setFillColor(C);c.rect(0,h-10,w,10,fill=1,stroke=0);c.setFillColor(colors.HexColor('#c82332'));c.rect(w*.75,h-10,w*.15,10,fill=1,stroke=0);c.setFillColor(colors.HexColor('#f5bf19'));c.rect(w*.9,h-10,w*.1,10,fill=1,stroke=0);c.setFillColor(C);c.setFont('DV',7);c.drawString(48,27,'IU DIGITAL · SIMULACIÓN · SARA COLORADO GIL · 2026');c.drawRightString(w-48,27,str(d.page))
 def main():
- pages=json.loads((ROOT/'articulo/contenido.json').read_text());story=[]
- story += [Spacer(1,55),para('IU DIGITAL','cover'),para('INSTITUCIÓN UNIVERSITARIA DIGITAL DE ANTIOQUIA','center'),Spacer(1,32),para('Estados conversacionales latentes y riesgo de abandono','cover'),para('Un banco de simulación con Modelos Ocultos de Markov','center'),Spacer(1,35),para('Actividad didáctica 2 · Módulo 2','center'),para('<b>Sara Colorado Gil</b>','center'),para('Ingeniería de Software y Datos<br/>Asignatura: Simulación<br/>Docente: Julián Andrés Loaiza López','center'),Spacer(1,35),para('Medellín, Antioquia<br/>Noviembre de 2026','center'),para('Investigación computacional con datos sintéticos','center'),PageBreak()]
+ pages=json.loads((ROOT/'articulo/contenido.json').read_text());meta=json.loads((ROOT/'articulo/metadatos.json').read_text());story=[]
+ story += [Spacer(1,55),para('IU DIGITAL','cover'),para('INSTITUCIÓN UNIVERSITARIA DIGITAL DE ANTIOQUIA','center'),Spacer(1,32),para(meta['title'],'cover'),para(meta['subtitle'],'center'),Spacer(1,35),para('Actividad didáctica 2 · Módulo 2','center'),para('<b>Sara Colorado Gil</b>','center'),para('Ingeniería de Software y Datos<br/>Asignatura: Simulación<br/>Docente: Julián Andrés Loaiza López','center'),Spacer(1,35),para('Medellín, Antioquia<br/>Noviembre de 2026','center'),para('Actividad de simulación con datos sintéticos','center'),PageBreak()]
  for idx,p in enumerate(pages):
   story.append(para(p['title'],'h2'))
   for b in p['blocks']:
@@ -55,7 +55,7 @@ def main():
   mapping={'\\':r'\textbackslash{}','&':r'\&','%':r'\%','$':r'\$','#':r'\#','_':r'\_','{':r'\{','}':r'\}','~':r'\textasciitilde{}','^':r'\textasciicircum{}'}
   return ''.join(mapping.get(c,c) for c in s)
  equations=[r'\lambda=(S,V,A,B,\pi),\quad A_{ij}=P(S_{t+1}=j\mid S_t=i),\quad B_{jk}=P(O_t=k\mid S_t=j)',r'P(S_{t+1}\mid S_{1:t})=P(S_{t+1}\mid S_t),\quad P(O_t\mid S_{1:t},O_{1:t-1})=P(O_t\mid S_t)',r'P(s_{1:T},o_{1:T})=\pi_{s_1}B_{s_1,o_1}\prod_{u=2}^T A_{s_{u-1},s_u}B_{s_u,o_u}']
- out=[r'\documentclass[10pt,a4paper]{article}',r'\usepackage[margin=23mm]{geometry}',r'\usepackage{fontspec}\setmainfont{DejaVu Serif}',r'\usepackage[spanish]{babel}\usepackage{amsmath,graphicx,longtable,booktabs,hyperref,xcolor}',r'\definecolor{institucional}{HTML}{203A5E}\hypersetup{colorlinks=true,urlcolor=institucional}',r'\title{Estados conversacionales latentes y riesgo de abandono: un banco de simulación con HMM}',r'\author{Sara Colorado Gil\\IU Digital de Antioquia\\Ingeniería de Software y Datos\\Simulación · Actividad didáctica 2 · Módulo 2\\Docente: Julián Andrés Loaiza López}',r'\date{Noviembre de 2026}\begin{document}\maketitle\newpage']
+ out=[r'\documentclass[10pt,a4paper]{article}',r'\usepackage[margin=23mm]{geometry}',r'\usepackage{fontspec}\setmainfont{DejaVu Serif}',r'\usepackage[spanish]{babel}\usepackage{amsmath,graphicx,longtable,booktabs,hyperref,xcolor}',r'\definecolor{institucional}{HTML}{203A5E}\hypersetup{colorlinks=true,urlcolor=institucional}',r'\title{'+tex(meta['title']+': '+meta['subtitle'])+'}',r'\author{Sara Colorado Gil\\IU Digital de Antioquia\\Ingeniería de Software y Datos\\Simulación · Actividad didáctica 2 · Módulo 2\\Docente: Julián Andrés Loaiza López}',r'\date{Noviembre de 2026}\begin{document}\maketitle\newpage']
  for p in pages:
   out.append(r'\section*{'+tex(p['title'])+'}')
   for b in p['blocks']:
