@@ -50,7 +50,19 @@ Fecha: 5 de noviembre de 2026 (Colombia). Datos exclusivamente sintéticos.
 
 Conexión verificada: GitHub **IU Digital**, usuario **saracoloradog**.
 Repositorio público y permiso de escritura comprobados mediante el conector.
-El estado del despliegue y sus rutas se registrará después de publicar.
+Publicación comprobada en `main`, commit `097884d63be4a52550f3e2ca756bfdc18db6a4c1`.
+GitHub Actions «pages build and deployment»: build y deploy **success**.
+Registro: https://github.com/saracoloradog/simulacion-iu-digital/actions/runs/42090132167
+
+Las seis rutas de `resultados/verificacion_publicacion.json` respondieron HTTP 200
+y sus bytes coincidieron con la copia local: informe, simulador, laboratorio,
+PDF, réplicas CSV y modelos JSON. Los 44 archivos iniciales fueron contrastados
+con sus blobs de GitHub; coinciden. El diff respecto del commit anterior confirma
+que index.html, demo.html, laboratorio.html y modulo-1 no cambiaron.
+
+Sobre la versión pública se probó «Mostrar todos» y «Revelar estados» del
+simulador. El laboratorio ejecutó 300 réplicas × 50 turnos y no registró errores
+JavaScript. Se verificaron todos los enlaces y recursos relativos de los tres HTML.
 
 ## Pendientes humanos y límites
 
