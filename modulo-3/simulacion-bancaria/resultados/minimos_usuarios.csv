@@ -1,0 +1,9 @@
+replica,semilla,accion,tipo_usuario,usuarios
+96,3969009372,pago,lento,6
+72,919048937,pago,muy_lento,11
+35,980521703,pago,normal,2
+37,2836457196,pago,rapido,0
+77,2860169638,retiro,lento,13
+84,855071273,retiro,muy_lento,15
+18,3572696602,retiro,normal,32
+44,2370517429,retiro,rapido,19

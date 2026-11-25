@@ -50,3 +50,19 @@ de sensibilidad. Los resultados proceden de experimentos con datos sintéticos.
 - [Laboratorio HMM](https://saracoloradog.github.io/simulacion-iu-digital/modulo-2/hmm-conversaciones/laboratorio.html)
 - [Artículo PDF](modulo-2/hmm-conversaciones/articulo/articulo.pdf)
 - [Código, resultados e instrucciones](modulo-2/hmm-conversaciones/README.md)
+
+## Módulo 3: simulación de atención bancaria
+
+Simulación de eventos discretos para comparar la distribución de tres cajas
+entre operaciones de retiros y pagos. Se simularon 100 jornadas de ocho horas
+con tiempos de llegada y servicio exponenciales según el tipo de usuario.
+
+Se analizaron cuatro configuraciones: tres cajas mixtas, dos para retiros y una
+para pagos, una para retiros y dos para pagos, y una alternativa de cuatro cajas.
+Entre las dos opciones con cajas exclusivas, la menor espera general se obtuvo
+con dos cajas para retiros y una para pagos.
+
+- [Informe académico](https://saracoloradog.github.io/simulacion-iu-digital/modulo-3/simulacion-bancaria/)
+- [Código de la simulación](modulo-3/simulacion-bancaria/src/simulacion_bancaria.py)
+- [Resultados de los escenarios](modulo-3/simulacion-bancaria/resultados/resumen_escenarios.csv)
+- [Código, metodología e instrucciones](modulo-3/simulacion-bancaria/README.md)

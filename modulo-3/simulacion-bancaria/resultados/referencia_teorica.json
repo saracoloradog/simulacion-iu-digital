@@ -1,0 +1,11 @@
+{
+  "semilla_maestra": 20261122,
+  "replicas": 100,
+  "minutos_por_dia": 480,
+  "media_llegada_retiro": 2.14,
+  "media_llegada_pago": 3.0,
+  "media_llegada_total": 2.3979999999999997,
+  "tasa_llegada_hora": 25.020850708924108,
+  "media_servicio_retiro": 2.34,
+  "media_servicio_pago": 5.2
+}

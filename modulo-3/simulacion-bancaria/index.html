@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Simulación de atención bancaria | IU Digital</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="barra">
+    <span>IU DIGITAL · SIMULACIÓN · MÓDULO 3</span>
+    <nav>
+      <a href="#introduccion">Introducción</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#conclusiones">Conclusiones</a>
+      <a href="README.md">Código e instrucciones</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="portada">
+      <div class="marca">IU DIGITAL</div>
+      <div>Institución Universitaria Digital de Antioquia</div>
+      <div class="linea"></div>
+      <h1>SIMULACIÓN DE ATENCIÓN BANCARIA
+        <small>Comparación de la distribución de tres cajeros para retiros y pagos</small>
+      </h1>
+      <p style="text-align:center">Actividad didáctica 2 · Módulo 3</p>
+      <p style="text-align:center"><b>Sara Colorado Gil</b><br>Ingeniería de Software y Datos · Asignatura: Simulación</p>
+      <p style="text-align:center">Noviembre de 2026</p>
+    </section>
+
+    <section class="seccion" id="introduccion">
+      <h2>1. Introducción</h2>
+      <p>En esta actividad simulé la atención de una sucursal bancaria que tiene tres cajeros y recibe dos clases de operaciones: retiros y pagos. El banco necesita decidir si conviene asignar dos cajas para retiros y una para pagos, o realizar la distribución contraria. Aunque el 70 % de los usuarios hace retiros, los pagos requieren más tiempo de atención. Por eso la cantidad de clientes no es suficiente para tomar la decisión.</p>
+      <p>El objetivo fue comparar los tiempos de espera, la utilización de los cajeros y la cantidad de usuarios atendidos en diferentes configuraciones. También incluí un escenario con una cuarta caja para revisar si realmente hace falta aumentar la capacidad.</p>
+      <div class="resumen">
+        <div class="dato"><strong>100</strong>réplicas independientes</div>
+        <div class="dato"><strong>8 h</strong>por día simulado</div>
+        <div class="dato"><strong>70 %</strong>de usuarios de retiro</div>
+        <div class="dato"><strong>30 %</strong>de usuarios de pago</div>
+      </div>
+      <h3>Pregunta central</h3>
+      <p>¿Qué distribución de cajeros reduce mejor la espera sin concentrar toda la carga en una sola operación?</p>
+    </section>
+
+    <section class="seccion" id="metodologia">
+      <h2>2. Metodología</h2>
+      <p>Desarrollé una simulación de eventos discretos en Python. Cada réplica representa un día de 480 minutos. Para comparar los escenarios de manera justa, primero genero la demanda del día y luego atiendo exactamente a esos mismos clientes con cada configuración. Así evito que una alternativa parezca mejor solamente porque recibió menos personas o tiempos de servicio más cortos.</p>
+
+      <div class="tabla">
+        <table>
+          <thead><tr><th>Operación</th><th>Usuario</th><th>Servicio medio</th><th>Llegada media</th><th>Probabilidad dentro de la operación</th></tr></thead>
+          <tbody>
+            <tr><td>Retiro</td><td>Rápido</td><td>1 min</td><td>1 min</td><td>23 %</td></tr>
+            <tr><td>Retiro</td><td>Normal</td><td>2 min</td><td>2 min</td><td>40 %</td></tr>
+            <tr><td>Retiro</td><td>Lento</td><td>3 min</td><td>3 min</td><td>17 %</td></tr>
+            <tr><td>Retiro</td><td>Muy lento</td><td>4 min</td><td>3 min</td><td>20 %</td></tr>
+            <tr><td>Pago</td><td>Rápido</td><td>3 min</td><td>1 min</td><td>10 %</td></tr>
+            <tr><td>Pago</td><td>Normal</td><td>3 min</td><td>2 min</td><td>20 %</td></tr>
+            <tr><td>Pago</td><td>Lento</td><td>5 min</td><td>3 min</td><td>30 %</td></tr>
+            <tr><td>Pago</td><td>Muy lento</td><td>7 min</td><td>4 min</td><td>40 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Supuestos utilizados</h3>
+      <ol>
+        <li>Las llegadas y los servicios se generan con distribuciones exponenciales usando las medias suministradas.</li>
+        <li>Cada cajero atiende una fila FIFO. Cuando hay dos cajas compatibles, el usuario elige la que pueda comenzar a atenderlo primero.</li>
+        <li>Los cajeros tienen la misma velocidad. Las diferencias entre ellos aparecen por el tipo de clientes que reciben.</li>
+        <li>A los 480 minutos dejan de llegar usuarios, pero se termina de atender a quienes ya habían llegado.</li>
+      </ol>
+
+      <div class="nota"><b>Limitación del modelo.</b> Al combinar cuatro medias de servicio diferentes, el tiempo agregado ya no es una sola distribución exponencial. Por eso el sistema no cumple de forma exacta un M/M/1 clásico. Conservé el supuesto exponencial para cada tipo de usuario y documenté esta decisión en lugar de ocultarla.</div>
+    </section>
+
+    <section class="seccion" id="resultados">
+      <h2>3. Resultados</h2>
+      <p>En las cien réplicas llegaron en promedio 200,92 usuarios por día. Todas las configuraciones recibieron esa misma demanda. La comparación muestra que especializar las cajas produce un desequilibrio: la operación que queda con un solo cajero acumula la mayor espera.</p>
+
+      <div class="tabla">
+        <table>
+          <thead><tr><th>Configuración</th><th>Espera media</th><th>P95 de espera</th><th>Utilización máxima</th><th>Tiempo extra al cierre</th></tr></thead>
+          <tbody>
+            <tr><td>3 cajas mixtas</td><td>0,44 min</td><td>2,98 min</td><td>47,6 %</td><td>6,12 min</td></tr>
+            <tr><td>2 retiros + 1 pago</td><td>3,03 min</td><td>19,66 min</td><td>63,7 %</td><td>14,07 min</td></tr>
+            <tr><td>1 retiro + 2 pagos</td><td>4,36 min</td><td>17,85 min</td><td>67,1 %</td><td>9,56 min</td></tr>
+            <tr><td>2 retiros + 2 pagos</td><td>0,44 min</td><td>2,96 min</td><td>38,8 %</td><td>6,17 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img src="figuras/espera_escenarios.png" alt="Espera promedio de las cuatro configuraciones">
+        <figcaption>Figura 1. Promedio del tiempo de espera de las cien réplicas. Las líneas negras representan intervalos de confianza aproximados del 95 %.</figcaption>
+      </figure>
+
+      <h3>La operación con una sola caja concentra la espera</h3>
+      <p>Con dos cajas de retiro y una de pago, los retiros esperaron 0,40 minutos en promedio, mientras que los pagos esperaron 9,41 minutos. Con la distribución contraria, los pagos bajaron a 0,55 minutos y los retiros subieron a 6,11 minutos. Este resultado explica por qué no conviene decidir únicamente con el porcentaje 70/30.</p>
+
+      <figure>
+        <img src="figuras/espera_por_accion.png" alt="Espera de retiros y pagos en cada configuración">
+        <figcaption>Figura 2. Tiempo promedio de espera separado por operación. La especialización mejora una fila y perjudica la otra.</figcaption>
+      </figure>
+
+      <h3>Desempeño de los cajeros</h3>
+      <p>En la configuración recomendada entre las dos alternativas obligatorias, el cajero R1 tuvo el menor tiempo medio de servicio, con 2,31 minutos, y P1 tuvo el mayor, con 5,32 minutos. Esto no significa que P1 trabaje peor: su fila contiene pagos, que según el enunciado son operaciones más largas.</p>
+
+      <figure>
+        <img src="figuras/utilizacion_cajeros.png" alt="Utilización de los cajeros por configuración">
+        <figcaption>Figura 3. Utilización promedio durante el horario de apertura. Ninguna configuración supera la referencia del 80 %, pero las alternativas exclusivas distribuyen la carga de manera desigual.</figcaption>
+      </figure>
+
+      <h3>Promedio de usuarios por tipo</h3>
+      <div class="tabla">
+        <table>
+          <thead><tr><th>Operación</th><th>Rápido</th><th>Normal</th><th>Lento</th><th>Muy lento</th></tr></thead>
+          <tbody>
+            <tr><td>Retiro</td><td>32,50</td><td>56,74</td><td>24,31</td><td>27,40</td></tr>
+            <tr><td>Pago</td><td>6,47</td><td>12,17</td><td>17,63</td><td>23,70</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Réplicas con la menor cantidad de usuarios</h3>
+      <p>Interpreté “modelo con menor cantidad” como la réplica que presentó el menor conteo de cada tipo. No existe una sola réplica mínima para todos los grupos, porque cada combinación alcanzó su mínimo en un día diferente.</p>
+      <div class="tabla">
+        <table>
+          <thead><tr><th>Operación</th><th>Tipo</th><th>Menor cantidad</th><th>Réplica</th></tr></thead>
+          <tbody>
+            <tr><td>Pago</td><td>Rápido</td><td>0</td><td>37</td></tr>
+            <tr><td>Pago</td><td>Normal</td><td>2</td><td>35</td></tr>
+            <tr><td>Pago</td><td>Lento</td><td>6</td><td>96</td></tr>
+            <tr><td>Pago</td><td>Muy lento</td><td>11</td><td>72</td></tr>
+            <tr><td>Retiro</td><td>Rápido</td><td>19</td><td>44</td></tr>
+            <tr><td>Retiro</td><td>Normal</td><td>32</td><td>18</td></tr>
+            <tr><td>Retiro</td><td>Lento</td><td>13</td><td>77</td></tr>
+            <tr><td>Retiro</td><td>Muy lento</td><td>15</td><td>84</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>El archivo <a href="resultados/usuarios_por_replica.csv">usuarios_por_replica.csv</a> conserva los totales de cada uno de los cien días y <a href="resultados/minimos_usuarios.csv">minimos_usuarios.csv</a> permite comprobar estos mínimos junto con sus semillas.</p>
+    </section>
+
+    <section class="seccion" id="conclusiones">
+      <h2>4. Conclusiones provisionales</h2>
+      <p>Si el banco debe escoger solamente entre las dos distribuciones exclusivas, recomiendo <b>dos cajas para retiros y una para pagos</b>, porque obtuvo el menor tiempo promedio general: 3,03 minutos frente a 4,36 minutos. Sin embargo, esta alternativa deja a los usuarios de pagos con una espera media de 9,41 minutos. Por eso la recomendación debe incluir esa desventaja y no presentarse como una solución perfecta.</p>
+
+      <div class="decision"><b>Sobre una cuarta caja.</b> No es indispensable para mantener estable el sistema, ya que la utilización máxima de las configuraciones de tres cajas quedó por debajo del 80 %. Sí resulta útil si el banco exige cajas exclusivas y quiere equilibrar el servicio: con dos cajas para cada operación la espera global bajó a 0,44 minutos. Si las cajas pueden seguir siendo mixtas, tres cajeros alcanzaron prácticamente el mismo resultado y contratar un cuarto no se justificaría con estos datos.</div>
+
+      <p>La principal enseñanza del ejercicio es que la demanda debe analizarse junto con el tiempo de servicio. Los retiros son más numerosos, pero los pagos tardan más. La simulación permitió observar esa relación y comparar las consecuencias de cada distribución antes de modificar la operación real del banco.</p>
+
+      <h3>Archivos para reproducir el trabajo</h3>
+      <div class="enlaces">
+        <a class="boton" href="resultados/resumen_escenarios.csv">Resumen de escenarios</a>
+        <a class="boton" href="resultados/resumen_cajeros.csv">Resultados por cajero</a>
+        <a class="boton" href="resultados/replicas.csv">Cien réplicas</a>
+        <a class="boton secundario" href="README.md">Instrucciones y supuestos</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>Sara Colorado Gil · Simulación · IU Digital de Antioquia · 2026</footer>
+</body>
+</html>
